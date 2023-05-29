@@ -22,7 +22,7 @@ void InitLog()
 		sinks.push_back(std::make_shared<spdlog::sinks::basic_file_sink_mt>(fmt::format("Logs/{}.txt", buffer.str())));
 
 		sinks.push_back(std::make_shared<spdlog::sinks::stdout_color_sink_mt>());
-		s_MatrixMentorLogger = std::make_shared<spdlog::logger>("MatrixMentorLog", std::begin(sinks), std::end(sinks));
+		s_MatrixMentorLogger = std::make_shared<spdlog::logger>("Matrix Mentor", std::begin(sinks), std::end(sinks));
 		s_MatrixMentorLogger->set_level(spdlog::level::trace);
 	}
 }

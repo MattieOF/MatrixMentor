@@ -1,2 +1,2 @@
-# TestProject
-Test project!
+# Matrix Mentor
+Following ThinMatrix's OpenGL tutorials! (In C++)
