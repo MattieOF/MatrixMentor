@@ -8,6 +8,11 @@ outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 IncludeDir = {}
 IncludeDir["spdlog"] = "MatrixMentor/Vendor/spdlog/include"
 IncludeDir["PPK_ASSERT"] = "MatrixMentor/Vendor/PPK_ASSERT/Include"
+IncludeDir["GLFW"] = "MatrixMentor/Vendor/GLFW/include"
+
+group "Vendor"
+	include "MatrixMentor/Vendor/glfw.lua"
+group ""
 
 project "MatrixMentor"
 	kind "ConsoleApp"
@@ -35,6 +40,7 @@ project "MatrixMentor"
 	includedirs 
 	{ 
 		"%{IncludeDir.spdlog}",
+		"%{IncludeDir.GLFW}",
 		"%{IncludeDir.PPK_ASSERT}",
 
 		"MatrixMentor/Include"
@@ -42,6 +48,8 @@ project "MatrixMentor"
 
 	links 
 	{
+		"GLFW",
+		"opengl32.lib"
 	}
 
 	defines {

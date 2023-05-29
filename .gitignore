@@ -424,3 +424,6 @@ FodyWeavers.xsd
 
 !Scripts/Bin
 Build
+*.vcxproj.filters
+*.vcxproj
+*.sln

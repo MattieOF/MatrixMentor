@@ -1,3 +1,6 @@
 [submodule "MatrixMentor/Vendor/spdlog"]
 	path = MatrixMentor/Vendor/spdlog
 	url = https://github.com/gabime/spdlog.git
+[submodule "MatrixMentor/Vendor/glfw"]
+	path = MatrixMentor/Vendor/glfw
+	url = https://github.com/glfw/glfw.git
