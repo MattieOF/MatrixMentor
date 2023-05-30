@@ -6,5 +6,5 @@ class Renderer
 {
 public:
 	static void Prepare();
-	static void RenderModel(RawModel* model);
+	static void RenderModel(const RawModel* model);
 };

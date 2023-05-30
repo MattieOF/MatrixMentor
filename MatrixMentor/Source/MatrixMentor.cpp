@@ -14,11 +14,14 @@ public:
 			-0.5f, 0.5f, 0.f,
 			-0.5f, -0.5f, 0.f,
 			0.5f, -0.5f, 0.f,
-			0.5f, -0.5f, 0.f,
 			0.5f, 0.5f, 0.f,
-			-0.5f, 0.5f, 0.f
 		};
-		m_Rectangle = new RawModel(verticies);
+
+		std::vector<uint32_t> indices = {
+			0, 1, 3, 3, 1, 2
+		};
+
+		m_Rectangle = new RawModel(verticies, indices);
 	}
 
 	void OnRender() override

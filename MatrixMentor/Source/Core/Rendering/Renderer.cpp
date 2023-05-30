@@ -10,9 +10,11 @@ void Renderer::Prepare()
 	glClear(GL_COLOR_BUFFER_BIT);
 }
 
-void Renderer::RenderModel(RawModel* model)
+void Renderer::RenderModel(const RawModel* model)
 {
 	glBindVertexArray(model->GetVAO());
-	glDrawArrays(GL_TRIANGLES, 0, static_cast<GLsizei>(model->GetVertexCount()));
+	glEnableVertexAttribArray(0);
+	glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(model->GetVertexCount()), GL_UNSIGNED_INT, nullptr);
+	glDisableVertexAttribArray(0);
 	glBindVertexArray(0);
 }

@@ -64,7 +64,7 @@ os.mkdir("MatrixMentor/Source")
 os.mkdir("MatrixMentor/Include")
 
 filter "configurations:Debug"
-	defines { "MM_DEBUG", "MM_ENABLE_ASSERTS" }
+	defines { "MM_DEBUG", "MM_ENABLE_ASSERTS", "MM_SHOW_GL_NOTIFICATIONS" }
 	symbols "On"
 	runtime "Debug"
 

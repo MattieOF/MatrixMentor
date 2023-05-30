@@ -32,6 +32,13 @@ void GLErrorCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLs
 		return;
 #endif
 
+#ifndef MM_NO_IGNORED_GL_ERROR_IDS
+	static std::vector<GLuint> ignoredIDs = { 131185 };
+
+	if (std::find(ignoredIDs.begin(), ignoredIDs.end(), id) != ignoredIDs.end())
+		return;
+#endif
+
 	const char* sourceText;
 	const char* typeText;
 	const char* severityText;

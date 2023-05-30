@@ -1,9 +1,9 @@
 #include "mmpch.h"
+
 #include "Core/MatrixMentorLog.h"
 
 #include <iomanip>
-
-#include "spdlog/sinks/basic_file_sink.h"
+#include <spdlog/sinks/basic_file_sink.h>
 
 std::shared_ptr<spdlog::logger> s_MatrixMentorLogger;
 
