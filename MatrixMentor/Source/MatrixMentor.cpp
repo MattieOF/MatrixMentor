@@ -16,7 +16,7 @@ int main()
 		true,
 		true,
 		true,
-		GLSettings()
+		GLSettings {4, 6}
 	};
 	if (!Window::Create(windowSpec, window))
 		return -1;

@@ -2,7 +2,8 @@
 
 #include "Core/Window.h"
 
-#include <GLFW/glfw3.h>
+#include <glad/gl.h>
+#include <GLFW/glfw3.h> // Include after glad!
 
 #include "Core/Events/ApplicationEvent.h"
 #include "Core/Events/KeyEvent.h"
@@ -12,6 +13,15 @@
 static void GLFWErrorCallback(int error, const char* desc)
 {
 	MM_ERROR("GLFW Error ({0}): {1}", error, desc);
+}
+
+static std::pair<int, int> GetGLADVersion(int version)
+{
+	std::pair<int, int> output;
+	output.first = version / 10000;
+	version -= output.first * 10000;
+	output.second = version;
+	return output;
 }
 
 bool Window::Create(const WindowSpecification& spec, Window*& outWindow)
@@ -61,13 +71,25 @@ bool Window::Create(const WindowSpecification& spec, Window*& outWindow)
 
 	glfwShowWindow(window);
 
+	MM_INFO("Successfully created GLFW window!");
+
 	// Initialise OpenGL context
 	glfwMakeContextCurrent(window);
 	glfwSwapInterval(spec.VSync ? 1 : 0);
-	
-	MM_INFO("Successfully initialised window and OpenGL {0}.{1}{2}",
-		spec.GLSettings.Major, spec.GLSettings.Minor, spec.GLSettings.Core ? " (Core)" : "");
 
+	// Initialise OpenGL
+	const int version = gladLoadGL(glfwGetProcAddress);
+	if (version == 0) {
+		
+		MM_ERROR("Failed to load OpenGL!");
+		glfwTerminate();
+		return false;
+	} else
+	{
+		auto decodedVersion = GetGLADVersion(version);
+		MM_INFO("Successfully loaded OpenGL {0}.{1}{2} via GLAD!", decodedVersion.first, decodedVersion.second, spec.GLSettings.Core ? " (Core)" : "");
+	}
+	
 	// Basic GL Setup
 	glViewport(0, 0, spec.Width, spec.Height);
 	const char* glVersion = reinterpret_cast<const char*>(glGetString(GL_VERSION));
