@@ -18,8 +18,8 @@ int main()
 	};
 	if (!Window::Create(windowSpec, window))
 		return -1;
-	
-	std::cin.get();
+
+	window->Run();
 
 	// Clean up
 	delete window;

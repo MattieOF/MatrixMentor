@@ -2,7 +2,9 @@
 
 #include "Core/Window.h"
 
-bool Window::Create(const WindowSpecification& spec, Window* outWindow)
+#include <GLFW/glfw3.h>
+
+bool Window::Create(const WindowSpecification& spec, Window*& outWindow)
 {
 	if (!glfwInit())
 	{
@@ -14,12 +16,15 @@ bool Window::Create(const WindowSpecification& spec, Window* outWindow)
 	else
 	{
 		const char* version = glfwGetVersionString();
-		MM_INFO("Successfully initialised GLFW ({0})", version);
+		MM_INFO("Successfully initialised GLFW ({0})\n", version);
 	}
 
 	GLFWwindow* window = nullptr;
 	glfwWindowHint(GLFW_VISIBLE, false);
 	glfwWindowHint(GLFW_RESIZABLE, spec.Resizeable);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, spec.GLSettings.Major);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, spec.GLSettings.Minor);
+	glfwWindowHint(GLFW_OPENGL_CORE_PROFILE, spec.GLSettings.Core);
 	window = glfwCreateWindow(spec.Width, spec.Height, spec.Title.c_str(), nullptr, nullptr);
 
 	if (!window)
@@ -48,9 +53,36 @@ bool Window::Create(const WindowSpecification& spec, Window* outWindow)
 	// Initialise OpenGL context
 	glfwMakeContextCurrent(window);
 	glfwSwapInterval(spec.VSync ? 1 : 0);
+	
+	MM_INFO("Successfully initialised window and OpenGL {0}.{1}{2}",
+		spec.GLSettings.Major, spec.GLSettings.Minor, spec.GLSettings.Core ? " (Core)" : "");
+
+	// Basic GL Setup
+	glViewport(0, 0, spec.Width, spec.Height);
+	const char* glVersion = reinterpret_cast<const char*>(glGetString(GL_VERSION));
+	const char* renderer = reinterpret_cast<const char*>(glGetString(GL_RENDERER));
+	const char* vendor = reinterpret_cast<const char*>(glGetString(GL_VENDOR));
+	MM_INFO("	Version: {0}", glVersion);
+	MM_INFO("	GPU:     {0}", renderer);
+	MM_INFO("	Vendor:  {0}", vendor);
 
 	outWindow = new Window(window);
 	return true;
+}
+
+void Window::Run()
+{
+	while (!glfwWindowShouldClose(m_Window))
+	{
+		glfwSwapBuffers(m_Window);
+
+		glfwPollEvents();
+	}
+}
+
+bool Window::ShouldClose() const
+{
+	return glfwWindowShouldClose(m_Window);
 }
 
 Window::Window(GLFWwindow* window)
