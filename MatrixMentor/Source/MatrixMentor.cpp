@@ -1,24 +1,26 @@
 #include "mmpch.h"
 
-#include <GLFW/glfw3.h>
+#include "Core/Window.h"
 
 int main()
 {
 	InitLog();
 	MM_INFO("Matrix Mentor!");
 
-	if (!glfwInit())
-	{
-		const char* error;
-		glfwGetError(&error);
-		MM_ERROR("Failed to initialise GLFW! Error: {0}", error);
+	// Initialise the window
+	Window* window = nullptr;
+	const WindowSpecification windowSpec = {
+		"Matrix Mentor",
+		1280, 600,
+		true,
+		true,
+		true
+	};
+	if (!Window::Create(windowSpec, window))
 		return -1;
-	}
-	else
-	{
-		const char* version = glfwGetVersionString();
-		MM_INFO("Successfully initialised GLFW ({0})", version);
-	}
-
+	
 	std::cin.get();
+
+	// Clean up
+	delete window;
 }
