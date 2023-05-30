@@ -73,6 +73,7 @@ filter "configurations:Release"
 filter "configurations:Dist"
 	defines { "MM_DIST" }
 	kind "WindowedApp"
+	entrypoint "mainCRTStartup"
 	optimize "On"
 	symbols "Off"
 	runtime "Release"
