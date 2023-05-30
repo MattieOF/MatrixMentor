@@ -12,6 +12,7 @@ public:
 	virtual void OnDetach() { }
 	virtual void OnUpdate(double deltaSeconds) { }
 	virtual void OnImGuiRender() { }
+	virtual void OnRender() { }
 	virtual void OnEvent(Event& event) { }
 
 	[[nodiscard]] FORCEINLINE const std::string& GetName() const { return m_DebugName; }

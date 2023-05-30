@@ -8,6 +8,7 @@ RawModel::RawModel(const std::vector<float>& vertices)
 {
 	m_VAO = CreateEmptyVAO();
 	m_VertexCount = static_cast<uint32_t>(vertices.size() / 3);
+	StoreDataInAttributeList(0, vertices, 3);
 	glBindVertexArray(0);
 }
 
@@ -21,6 +22,7 @@ void RawModel::StoreDataInAttributeList(uint32_t index, const std::vector<float>
 {
 	uint32_t vboId;
 	glGenBuffers(1, &vboId);
+	m_VBOs.emplace_back(vboId);
 	glBindBuffer(GL_ARRAY_BUFFER, vboId);
 	glBufferData(GL_ARRAY_BUFFER, data.size() * sizeof(data[0]), data.data(), GL_STATIC_DRAW);
 	glEnableVertexAttribArray(index);

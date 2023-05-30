@@ -9,6 +9,7 @@
 #include "Core/Events/KeyEvent.h"
 #include "Core/Events/MouseEvent.h"
 #include "Core/Input/Input.h"
+#include "Core/Rendering/Renderer.h"
 
 static void GLFWErrorCallback(int error, const char* desc)
 {
@@ -22,6 +23,107 @@ static std::pair<int, int> GetGLADVersion(int version)
 	version -= output.first * 10000;
 	output.second = version;
 	return output;
+}
+
+void GLErrorCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message, const void* userParam)
+{
+#ifndef MM_SHOW_GL_NOTIFICATIONS
+	if (severity == GL_DEBUG_SEVERITY_NOTIFICATION)
+		return;
+#endif
+
+	const char* sourceText;
+	const char* typeText;
+	const char* severityText;
+
+	switch (source) {
+	case GL_DEBUG_SOURCE_API:
+		sourceText = "API";
+		break;
+
+	case GL_DEBUG_SOURCE_WINDOW_SYSTEM:
+		sourceText = "Window System";
+		break;
+
+	case GL_DEBUG_SOURCE_SHADER_COMPILER:
+		sourceText = "Shader Compiler";
+		break;
+
+	case GL_DEBUG_SOURCE_THIRD_PARTY:
+		sourceText = "Third Party";
+		break;
+
+	case GL_DEBUG_SOURCE_APPLICATION:
+		sourceText = "Application";
+		break;
+
+	case GL_DEBUG_SOURCE_OTHER:
+		sourceText = "Other";
+		break;
+
+	default:
+		sourceText = "Unknown";
+		break;
+	}
+
+	switch (type) {
+	case GL_DEBUG_TYPE_ERROR:
+		typeText = "Error";
+		break;
+
+	case GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR:
+		typeText = "Deprecated Behaviour";
+		break;
+
+	case GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR:
+		typeText = "Undefined Behaviour";
+		break;
+
+	case GL_DEBUG_TYPE_PORTABILITY:
+		typeText = "Portability";
+		break;
+
+	case GL_DEBUG_TYPE_PERFORMANCE:
+		typeText = "Performance";
+		break;
+
+	case GL_DEBUG_TYPE_OTHER:
+		typeText = "Other";
+		break;
+
+	case GL_DEBUG_TYPE_MARKER:
+		typeText = "Marker";
+		break;
+
+	default:
+		typeText = "Unknown";
+		break;
+	}
+
+	switch (severity) {
+	case GL_DEBUG_SEVERITY_HIGH:
+		severityText = "High";
+		break;
+
+	case GL_DEBUG_SEVERITY_MEDIUM:
+		severityText = "Medium";
+		break;
+
+	case GL_DEBUG_SEVERITY_LOW:
+		severityText = "Low";
+		break;
+
+	case GL_DEBUG_SEVERITY_NOTIFICATION:
+		severityText = "Notification";
+		break;
+
+	default:
+		severityText = "Unknown";
+		break;
+	}
+
+	MM_ERROR("OpenGL Error ({0} severity, id: {4}): from {1}, {2}: {3}", severityText, sourceText, typeText, message, id);
+	MM_ASSERT_ERROR(severity == GL_DEBUG_SEVERITY_NOTIFICATION);
 }
 
 bool Window::Create(const WindowSpecification& spec, Window*& outWindow)
@@ -98,6 +200,12 @@ bool Window::Create(const WindowSpecification& spec, Window*& outWindow)
 	MM_INFO("	Version: {0}", glVersion);
 	MM_INFO("	GPU:     {0}", renderer);
 	MM_INFO("	Vendor:  {0}", vendor);
+
+	// Set OpenGL error callback
+#ifndef MM_DIST
+	glEnable(GL_DEBUG_OUTPUT);
+	glDebugMessageCallback(GLErrorCallback, nullptr);
+#endif
 
 	// Init input
 	delete Input::s_Instance;
@@ -209,9 +317,11 @@ void Window::Run()
 		for (Layer* layer : m_Layers)
 			layer->OnUpdate(0);
 
-		glClearColor(0.1f, 0.2f, 0.7f, 1.f);
-		glClear(GL_COLOR_BUFFER_BIT);
+		Renderer::Prepare();
 
+		for (Layer* layer : m_Layers)
+			layer->OnRender();
+		
 		glfwSwapBuffers(m_Window);
 	}
 }

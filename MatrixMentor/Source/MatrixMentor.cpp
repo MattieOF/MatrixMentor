@@ -2,6 +2,33 @@
 
 #include "Core/Window.h"
 #include "Core/Rendering/BaseOpenGLLayer.h"
+#include "Core/Rendering/RawModel.h"
+#include "Core/Rendering/Renderer.h"
+
+class QuadTestLayer : public Layer
+{
+public:
+	QuadTestLayer()
+	{
+		std::vector<float> verticies = {
+			-0.5f, 0.5f, 0.f,
+			-0.5f, -0.5f, 0.f,
+			0.5f, -0.5f, 0.f,
+			0.5f, -0.5f, 0.f,
+			0.5f, 0.5f, 0.f,
+			-0.5f, 0.5f, 0.f
+		};
+		m_Rectangle = new RawModel(verticies);
+	}
+
+	void OnRender() override
+	{
+		Renderer::RenderModel(m_Rectangle);
+	}
+
+private:
+	RawModel* m_Rectangle;
+};
 
 int main()
 {
@@ -22,6 +49,7 @@ int main()
 		return -1;
 
 	window->PushLayer(new BaseOpenGLLayer());
+	window->PushLayer(new QuadTestLayer());
 
 	window->Run();
 
