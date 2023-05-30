@@ -1,6 +1,7 @@
 #include "mmpch.h"
 
 #include "Core/Window.h"
+#include "Core/Rendering/BaseOpenGLLayer.h"
 
 int main()
 {
@@ -14,10 +15,13 @@ int main()
 		1280, 600,
 		true,
 		true,
-		true
+		true,
+		GLSettings()
 	};
 	if (!Window::Create(windowSpec, window))
 		return -1;
+
+	window->PushLayer(new BaseOpenGLLayer());
 
 	window->Run();
 
