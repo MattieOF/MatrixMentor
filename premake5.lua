@@ -9,9 +9,11 @@ IncludeDir = {}
 IncludeDir["spdlog"] = "MatrixMentor/Vendor/spdlog/include"
 IncludeDir["PPK_ASSERT"] = "MatrixMentor/Vendor/PPK_ASSERT/Include"
 IncludeDir["GLFW"] = "MatrixMentor/Vendor/GLFW/include"
+IncludeDir["GLAD"] = "MatrixMentor/Vendor/GLAD/include"
 
 group "Vendor"
 	include "MatrixMentor/Vendor/glfw.lua"
+	include "MatrixMentor/Vendor/glad.lua"
 group ""
 
 project "MatrixMentor"
@@ -41,6 +43,7 @@ project "MatrixMentor"
 	{ 
 		"%{IncludeDir.spdlog}",
 		"%{IncludeDir.GLFW}",
+		"%{IncludeDir.GLAD}",
 		"%{IncludeDir.PPK_ASSERT}",
 
 		"MatrixMentor/Include"
@@ -49,6 +52,7 @@ project "MatrixMentor"
 	links 
 	{
 		"GLFW",
+		"GLAD",
 		"opengl32.lib"
 	}
 
