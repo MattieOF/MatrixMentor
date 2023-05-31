@@ -25,9 +25,9 @@ struct WindowData
 {
 	using EventCallbackFn = std::function<void(Event&)>;
 
-	std::string Title;
-	uint32_t Width, Height;
-	bool VSync;
+	std::string Title = "Window";
+	uint32_t Width = 1280, Height = 600;
+	bool VSync = true;
 
 	EventCallbackFn EventCallback;
 };

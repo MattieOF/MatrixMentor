@@ -31,5 +31,5 @@ public:
 	bool IsMouseButtonPressedImpl(int button) override;
 	std::pair<double, double> GetMousePosImpl() override;
 
-	struct GLFWwindow* Window;
+	struct GLFWwindow* Window = nullptr;
 };
