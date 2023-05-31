@@ -11,6 +11,15 @@
 #include "Core/Input/Input.h"
 #include "Core/Rendering/Renderer.h"
 
+#ifndef MM_DONT_USE_DEDICATED
+// This should force usage of a dedicated nvidia GPU over an integrated one, if multiple exist within a system.
+// Thanks to http://stevendebock.blogspot.com/2013/07/nvidia-optimus.html and https://stackoverflow.com/a/39047129
+extern "C" {
+	__declspec(dllexport) unsigned long NvOptimusEnablement = 1;
+	__declspec(dllexport) int           AmdPowerXpressRequestHighPerformance = 1;
+}
+#endif
+
 static void GLFWErrorCallback(int error, const char* desc)
 {
 	MM_ERROR("GLFW Error ({0}): {1}", error, desc);
