@@ -350,12 +350,14 @@ void Window::PushLayer(Layer* layer)
 {
 	m_Layers.emplace(m_Layers.begin() + m_LayerStackInsert, layer);
 	m_LayerStackInsert++;
+	layer->SetWindow(this);
 	layer->OnAttach();
 }
 
 void Window::PushOverlay(Layer* overlay)
 {
 	m_Layers.emplace_back(overlay);
+	overlay->SetWindow(this);
 	overlay->OnAttach();
 }
 
@@ -409,6 +411,11 @@ void Window::SetWindowTitle(std::string_view newTitle)
 {
 	glfwSetWindowTitle(m_Window, newTitle.data());
 	m_WindowData.Title = std::string(newTitle);
+}
+
+void Window::Close() const
+{
+	glfwSetWindowShouldClose(m_Window, true);
 }
 
 bool Window::ShouldClose() const

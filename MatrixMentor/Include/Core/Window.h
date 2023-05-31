@@ -58,6 +58,7 @@ public:
 
 	[[nodiscard]] virtual GLFWwindow* GetNativeWindow() const { return m_Window; };
 
+	void Close() const;
 	FORCEINLINE bool ShouldClose() const;
 
 private:

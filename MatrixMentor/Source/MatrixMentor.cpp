@@ -1,6 +1,7 @@
 #include "mmpch.h"
 
 #include "Core/Window.h"
+#include "Core/Input/Input.h"
 #include "Core/Rendering/BaseOpenGLLayer.h"
 #include "Core/Rendering/RawModel.h"
 #include "Core/Rendering/Renderer.h"
@@ -27,6 +28,12 @@ public:
 	void OnRender() override
 	{
 		Renderer::RenderModel(m_Rectangle);
+	}
+
+	void OnUpdate(double deltaSeconds) override
+	{
+		if (Input::IsKeyPressed(MM_KEY_ESCAPE))
+			m_Window->Close();
 	}
 
 private:
