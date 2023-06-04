@@ -57,7 +57,7 @@ int main()
 	const WindowSpecification windowSpec = {
 		"Matrix Mentor",
 		1280, 600,
-		true,
+		false,
 		true,
 		true,
 		GLSettings {4, 6}

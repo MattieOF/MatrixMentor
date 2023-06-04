@@ -227,7 +227,7 @@ bool Window::Create(const WindowSpecification& spec, Window*& outWindow)
 	delete Input::s_Instance;
 	Input::s_Instance = new GlfwInput();
 	reinterpret_cast<GlfwInput*>(Input::s_Instance)->Window = window;
-
+	
 	// Setup GLFW event callbacks
 	glfwSetWindowSizeCallback(window, [](GLFWwindow* window, int width, int height)
 	{
@@ -326,12 +326,26 @@ bool Window::Create(const WindowSpecification& spec, Window*& outWindow)
 
 void Window::Run()
 {
+	static double lastFrametime;
+	static float  printFPSTimer = 1;
+
 	while (!glfwWindowShouldClose(m_Window))
 	{
+		double frametime = glfwGetTime();
+		double deltaTime = frametime - lastFrametime;
+		lastFrametime = frametime;
+
+		printFPSTimer -= static_cast<float>(deltaTime);
+		if (printFPSTimer <= 0)
+		{
+			MM_INFO("FPS: {0}", 1 / deltaTime);
+			printFPSTimer = 1;
+		}
+
 		glfwPollEvents();
 
 		for (Layer* layer : m_Layers)
-			layer->OnUpdate(0);
+			layer->OnUpdate(deltaTime);
 
 		Renderer::Prepare();
 
