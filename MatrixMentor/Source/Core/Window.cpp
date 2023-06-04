@@ -331,21 +331,21 @@ void Window::Run()
 
 	while (!glfwWindowShouldClose(m_Window))
 	{
-		double frametime = glfwGetTime();
-		double deltaTime = frametime - lastFrametime;
+		const double frametime = glfwGetTime();
+		m_UnscaledDeltaTime = frametime - lastFrametime;
 		lastFrametime = frametime;
 
-		printFPSTimer -= static_cast<float>(deltaTime);
+		printFPSTimer -= static_cast<float>(GetDeltaTime());
 		if (printFPSTimer <= 0)
 		{
-			MM_INFO("FPS: {0}", 1 / deltaTime);
+			MM_INFO("FPS: {0}", 1 / m_UnscaledDeltaTime);
 			printFPSTimer = 1;
 		}
 
 		glfwPollEvents();
 
 		for (Layer* layer : m_Layers)
-			layer->OnUpdate(deltaTime);
+			layer->OnUpdate(GetDeltaTime());
 
 		Renderer::Prepare();
 

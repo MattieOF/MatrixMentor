@@ -56,7 +56,13 @@ public:
 
 	FORCEINLINE void SetWindowTitle(std::string_view newTitle);
 
-	[[nodiscard]] virtual GLFWwindow* GetNativeWindow() const { return m_Window; };
+	[[nodiscard]] virtual GLFWwindow* GetNativeWindow() const { return m_Window; }
+
+	// Delta time functions
+	[[nodiscard]] double GetDeltaTime() const         { return m_UnscaledDeltaTime * m_TimeScale; }
+	[[nodiscard]] double GetUnscaledDeltaTime() const { return m_UnscaledDeltaTime; }
+	[[nodiscard]] double GetTimeScale() const         { return m_TimeScale; }
+	void SetTimeScale(double newTimeScale)            { m_TimeScale = newTimeScale; }
 
 	void Close() const;
 	FORCEINLINE bool ShouldClose() const;
@@ -70,4 +76,6 @@ private:
 	int m_LayerStackInsert = 0;
 
 	WindowData m_WindowData;
+
+	double m_UnscaledDeltaTime = 0, m_TimeScale = 1;
 };
