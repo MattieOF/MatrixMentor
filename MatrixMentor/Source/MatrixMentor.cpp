@@ -2,6 +2,7 @@
 
 #include "Core/Window.h"
 #include "Core/Input/Input.h"
+#include "Core/Events/Events.h"
 #include "Core/Rendering/BaseOpenGLLayer.h"
 #include "Core/Rendering/RawModel.h"
 #include "Core/Rendering/Renderer.h"
@@ -29,11 +30,17 @@ public:
 	{
 		Renderer::RenderModel(m_Rectangle);
 	}
-
-	void OnUpdate(double deltaSeconds) override
+	
+	void OnEvent(Event& event) override
 	{
-		if (Input::IsKeyPressed(MM_KEY_ESCAPE))
-			m_Window->Close();
+		EventDispatcher dispatcher(event);
+		
+		dispatcher.Dispatch<KeyPressedEvent>([this](const KeyPressedEvent& keyPressedEvent)
+		{
+			if (keyPressedEvent.GetKeyCode() == MM_KEY_ESCAPE)
+				m_Window->Close();
+			return false;
+		});
 	}
 
 private:
