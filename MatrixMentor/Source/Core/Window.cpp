@@ -351,6 +351,9 @@ void Window::Run()
 
 		for (Layer* layer : m_Layers)
 			layer->OnRender();
+
+		Input::m_KeysDownLastFrame = Input::m_KeysDownNow;
+		Input::m_KeysDownNow.reset();
 		
 		glfwSwapBuffers(m_Window);
 	}
@@ -359,6 +362,17 @@ void Window::Run()
 void Window::OnEvent(Event& e)
 {
 	EventDispatcher dispatcher(e);
+
+	dispatcher.Dispatch<KeyPressedEvent>([](const KeyPressedEvent& keyPressedEvent)
+	{
+		Input::m_KeysDownNow[keyPressedEvent.GetKeyCode()] = true;
+		return true;
+	});
+	dispatcher.Dispatch<KeyReleasedEvent>([](const KeyReleasedEvent& keyReleasedEvent)
+	{
+		Input::m_KeysDownNow[keyReleasedEvent.GetKeyCode()] = false;
+		return true;
+	});
 	
 	// Propagate the event to all layers, starting with the topmost layer/overlay, down to the base layer. 
 	for (auto it = m_Layers.end(); it != m_Layers.begin();)
