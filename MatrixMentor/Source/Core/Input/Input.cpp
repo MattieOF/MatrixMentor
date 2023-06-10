@@ -6,6 +6,9 @@
 
 Input* Input::s_Instance = nullptr;
 
+std::bitset<MM_KEY_LAST + 1>          Input::m_KeysDownNow, Input::m_KeysDownLastFrame;
+std::bitset<MM_MOUSE_BUTTON_LAST + 1> Input::m_MouseButtonsDownNow, Input::m_MouseButtonsDownLastFrame;
+
 bool GlfwInput::IsKeyPressedImpl(int keyCode)
 {
 	return glfwGetKey(Window, keyCode) == GLFW_PRESS;
