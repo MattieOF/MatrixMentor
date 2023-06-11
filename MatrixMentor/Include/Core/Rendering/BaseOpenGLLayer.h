@@ -3,9 +3,16 @@
 #include "Core/Layer.h"
 #include "Core/Events/ApplicationEvent.h"
 
+class ShaderProgram;
+
 class BaseOpenGLLayer : public Layer
 {
-	void OnEvent(Event& event) override;
+public:
+	BaseOpenGLLayer();
 
-	bool OnResize(WindowResizeEvent& e);
+private:
+	void OnEvent(Event& event) override;
+	static bool OnResize(const WindowResizeEvent& e);
+
+	Ref<ShaderProgram> m_ShaderTest;
 };

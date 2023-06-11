@@ -60,6 +60,9 @@ project "MatrixMentor"
 		"_CRT_SECURE_NO_WARNINGS"
 	}
 
+	filter "configurations:Dist"
+		postbuildcommands { "{COPYDIR} " .. path.getdirectory(".") .. "\"./MatrixMentor/Content/\" \"" .. path.getdirectory("path") .. "/../Build/%{prj.name}/" .. outputdir .. "/Content/\""}
+
 os.mkdir("MatrixMentor/Source")
 os.mkdir("MatrixMentor/Include")
 

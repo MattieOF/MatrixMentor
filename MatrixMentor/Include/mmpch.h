@@ -1,5 +1,7 @@
 #pragma once
 
+#define SPDLOG_EOL ""
+
 // Utility functions and types
 #include <iostream>
 #include <memory>
