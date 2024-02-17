@@ -2,22 +2,89 @@
 
 #include "Core/Rendering/Shaders/ShaderProgram.h"
 
-ShaderProgram::ShaderProgram(std::string_view name, std::string_view vertexSrc, std::string_view fragmentSrc)
+ShaderProgram::ShaderProgram(std::string_view name)
 	: m_Name(name)
 {
-	// Load shaders
-	int32_t vertex   = LoadShader(GL_VERTEX_SHADER, vertexSrc);
-	if (vertex == -1) return;
-	int32_t fragment = LoadShader(GL_FRAGMENT_SHADER, fragmentSrc);
-	if (fragment == -1) return;
-
-	// Create the program and attach and link the shaders
 	m_ProgramID = glCreateProgram();
-	glAttachShader(m_ProgramID, vertex);
-	glAttachShader(m_ProgramID, fragment);
+}
+
+ShaderProgram::~ShaderProgram()
+{
+	CleanUp();
+}
+
+int32_t ShaderProgram::AddStageFromSource(GLenum stage, std::string_view source)
+{
+	if (m_IsCompiled)
+	{
+		MM_ERROR("In shader {0}, attempting to add a stage to a compiled shader!", m_Name);
+		return -1;
+	}
+
+	if (!IsValidShaderStage(stage))
+	{
+		MM_ERROR("ShaderProgram::AddStage of shader \"{0}\" called with invalid stage enum: {1}.\nShould be one of: GL_VERTEX_SHADER, GL_FRAGMENT_SHADER, GL_TESS_EVALUATION_SHADER, GL_TESS_CONTROL_SHADER, GL_COMPUTE_SHADER", m_Name, stage);
+		return -1;
+	}
+
+	for (int32_t attrib : m_Attributes)
+		glEnableVertexAttribArray(attrib);
+
+	int32_t shaderID = glCreateShader(stage);
+	const auto length = static_cast<int32_t>(source.length());
+	const char* data = source.data();
+	glShaderSource(shaderID, 1, &data, &length);
+	glCompileShader(shaderID);
+
+	GLint compiled;
+	glGetShaderiv(shaderID, GL_COMPILE_STATUS, &compiled);
+	if (compiled != GL_TRUE)
+	{
+		GLsizei logLength = 0;
+		static GLchar message[1024];
+		glGetShaderInfoLog(shaderID, 1024, &logLength, message);
+		MM_ERROR_NO_NEWLINE("In shader {0}, failed to compile {1}: {2}", m_Name, GetShaderTypeString(stage), std::string_view(&message[0], logLength));
+		glDeleteShader(shaderID);
+		return -1;
+	}
+
+	m_ShaderStages.emplace_back(shaderID);
+
+	return shaderID;
+}
+
+int32_t ShaderProgram::AddStageFromFile(GLenum stage, std::string_view source)
+{
+	// Open source file and read to string stream
+	std::ifstream sourceFile(source.data());
+	if (!sourceFile.good())
+	{
+		MM_ERROR("Failed to open shader source \"{0}\"", source);
+		return -1;
+	}
+	std::stringstream buffer;
+	buffer << sourceFile.rdbuf();
+
+	// Call into add stage from source
+	const int32_t result = AddStageFromSource(stage, buffer.str());
+
+	// Clean up
+	sourceFile.close();
+
+	return result;
+}
+
+int32_t ShaderProgram::CompileAndLink()
+{
+	for (int32_t attrib : m_Attributes)
+		glEnableVertexAttribArray(attrib);
+
+	// Create the program and attach and link all shaders
+	for (const int32_t shaderID : m_ShaderStages)
+		glAttachShader(m_ProgramID, shaderID);
 	glLinkProgram(m_ProgramID);
 	glValidateProgram(m_ProgramID);
-
+	
 	// Check we linked successfully
 	int32_t success = 0;
 	glGetProgramiv(m_ProgramID, GL_LINK_STATUS, &success);
@@ -31,66 +98,36 @@ ShaderProgram::ShaderProgram(std::string_view name, std::string_view vertexSrc, 
 		MM_ERROR("Failed to link shader {0}: {1}", m_Name, infoLog.data());
 
 		// Clean up
-		glDeleteShader(vertex);
-		glDeleteShader(fragment);
-		glDeleteProgram(m_ProgramID);
+		for (const int32_t shaderID : m_ShaderStages)
+		{
+			glDetachShader(m_ProgramID, shaderID);
+			glDeleteShader(shaderID);
+		}
 
-		return;
+		return -1;
 	}
 
 	MM_INFO("Created shader program {0}!", m_Name);
 
 	// Clean up by detaching
-	glDetachShader(m_ProgramID, vertex);
-	glDetachShader(m_ProgramID, fragment);
-}
+	for (const int32_t shaderID : m_ShaderStages)
+		glDetachShader(m_ProgramID, shaderID);
 
-ShaderProgram::~ShaderProgram()
-{
-	CleanUp();
-}
-
-Ref<ShaderProgram> ShaderProgram::LoadShaderFromFiles(std::string_view name, std::string_view vertexPath, std::string_view fragmentPath)
-{
-	// Open source files and read to string stream
-	std::ifstream vertexFile(vertexPath.data());
-	if (!vertexFile.good())
-	{
-		MM_ERROR("Failed to open vertex shader \"{0}\"", vertexPath);
-		return nullptr;
-	}
-	std::stringstream vertexBuffer;
-	vertexBuffer << vertexFile.rdbuf();
-
-	std::ifstream fragmentFile(fragmentPath.data());
-	if (!fragmentFile.good())
-	{
-		MM_ERROR("Failed to open fragment shader \"{0}\"", fragmentPath);
-		return nullptr;
-	}
-	std::stringstream fragmentBuffer;
-	fragmentBuffer << fragmentFile.rdbuf();
-
-	// Create shader
-	Ref<ShaderProgram> program = CreateRef<ShaderProgram>(name, vertexBuffer.str(), fragmentBuffer.str());
-
-	// Clean up files
-	vertexFile.close();
-	fragmentFile.close();
-
-	// Finally, return result
-	return program;
+	m_IsCompiled = true;
+	
+	return m_ProgramID;
 }
 
 void ShaderProgram::BindAttribute(int attribute, std::string_view variableName)
 {
 	glBindAttribLocation(m_ProgramID, attribute, variableName.data());
+	m_Attributes.emplace_back(attribute);
 }
 
 void ShaderProgram::CleanUp()
 {
-	// TODO: leak, gotta delete shaders
-	// add all shaders to a vector
+	for (const int32_t shaderID : m_ShaderStages)
+		glDeleteShader(shaderID);
 	glDeleteProgram(m_ProgramID);
 }
 
@@ -113,27 +150,4 @@ const char* ShaderProgram::GetShaderTypeString(GLenum type)
 	default:
 		return fmt::format("Unknown Shader Type ({0})", type).c_str();
 	}
-}
-
-int32_t ShaderProgram::LoadShader(GLenum type, std::string_view source)
-{
-	int32_t shaderID = glCreateShader(type);
-	const auto length = static_cast<int32_t>(source.length());
-	const char* data = source.data();
-	glShaderSource(shaderID, 1, &data, &length);
-	glCompileShader(shaderID);
-
-	GLint compiled;
-	glGetShaderiv(shaderID, GL_COMPILE_STATUS, &compiled);
-	if (compiled != GL_TRUE)
-	{
-		GLsizei logLength = 0;
-		static GLchar message[1024];
-		glGetShaderInfoLog(shaderID, 1024, &logLength, message);
-		MM_ERROR_NO_NEWLINE("In shader {0}, failed to compile {1}: {2}", m_Name, GetShaderTypeString(type), std::string_view(&message[0], logLength));
-		glDeleteShader(shaderID);
-		return -1;
-	}
-
-	return shaderID;
 }
