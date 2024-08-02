@@ -1,4 +1,5 @@
 #pragma once
+
 #include "glad/gl.h"
 
 class ShaderProgram
@@ -15,9 +16,11 @@ public:
 	// Binding functions
 	FORCEINLINE void Bind() const { glUseProgram(m_ProgramID); }
 	static FORCEINLINE void Unbind() { glUseProgram(0); }
-
+	
 	FORCEINLINE bool IsCompiled() const { return m_IsCompiled; }
+	FORCEINLINE bool HasError() const { return m_HasError; }
 
+	virtual void BindAttributes();
 	void BindAttribute(int attribute, std::string_view variableName);
 
 	void CleanUp();
@@ -35,5 +38,5 @@ private:
 
 	std::string m_Name = "Untitled Shader";
 	int32_t m_ProgramID = -1;
-	bool m_IsCompiled = false;
+	bool m_IsCompiled = false, m_HasError = false;
 };

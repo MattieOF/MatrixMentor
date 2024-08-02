@@ -21,6 +21,12 @@ public:
 	[[nodiscard]] inline static bool IsMouseButtonPressed(int button) { return s_Instance->IsMouseButtonPressedImpl(button); }
 	[[nodiscard]] inline static bool IsMouseButtonReleased (int button) { return !(s_Instance->IsMouseButtonPressedImpl(button)); }
 	[[nodiscard]] inline static std::pair<double, double> GetMousePos() { return s_Instance->GetMousePosImpl(); }
+
+	inline static void UpdateInput()
+	{
+		m_KeysDownLastFrame         = m_KeysDownNow;
+		m_MouseButtonsDownLastFrame = m_MouseButtonsDownNow;
+	}
 protected:
 	virtual bool IsKeyPressedImpl(int keyCode) = 0;
 	virtual bool IsMouseButtonPressedImpl(int button) = 0;

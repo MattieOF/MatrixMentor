@@ -17,13 +17,14 @@ int32_t ShaderProgram::AddStageFromSource(GLenum stage, std::string_view source)
 {
 	if (m_IsCompiled)
 	{
-		MM_ERROR("In shader {0}, attempting to add a stage to a compiled shader!", m_Name);
+		MM_ERROR("In shader \"{0}\", attempting to add a stage to a compiled shader!", m_Name);
 		return -1;
 	}
 
 	if (!IsValidShaderStage(stage))
 	{
-		MM_ERROR("ShaderProgram::AddStage of shader \"{0}\" called with invalid stage enum: {1}.\nShould be one of: GL_VERTEX_SHADER, GL_FRAGMENT_SHADER, GL_TESS_EVALUATION_SHADER, GL_TESS_CONTROL_SHADER, GL_COMPUTE_SHADER", m_Name, stage);
+		MM_ERROR("ShaderProgram::AddStage of shader \"{0}\" called with invalid stage enum: {1}.\nShould be one of: "
+			"GL_VERTEX_SHADER, GL_FRAGMENT_SHADER, GL_TESS_EVALUATION_SHADER, GL_TESS_CONTROL_SHADER, GL_COMPUTE_SHADER", m_Name, stage);
 		return -1;
 	}
 
@@ -55,6 +56,12 @@ int32_t ShaderProgram::AddStageFromSource(GLenum stage, std::string_view source)
 
 int32_t ShaderProgram::AddStageFromFile(GLenum stage, std::string_view source)
 {
+	if (m_IsCompiled)
+	{
+		MM_ERROR("In shader \"{0}\", attempting to add a stage to a compiled shader!", m_Name);
+		return -1;
+	}
+
 	// Open source file and read to string stream
 	std::ifstream sourceFile(source.data());
 	if (!sourceFile.good())
@@ -76,6 +83,8 @@ int32_t ShaderProgram::AddStageFromFile(GLenum stage, std::string_view source)
 
 int32_t ShaderProgram::CompileAndLink()
 {
+	BindAttributes();
+
 	for (int32_t attrib : m_Attributes)
 		glEnableVertexAttribArray(attrib);
 
@@ -90,6 +99,9 @@ int32_t ShaderProgram::CompileAndLink()
 	glGetProgramiv(m_ProgramID, GL_LINK_STATUS, &success);
 	if (success == GL_FALSE)
 	{
+		// Uh oh, we failed to compile. Lets print out a reason.
+		m_HasError = true;
+
 		// Get error log and print it
 		GLint logLength = 0;
 		glGetProgramiv(m_ProgramID, GL_INFO_LOG_LENGTH, &logLength);
@@ -111,11 +123,19 @@ int32_t ShaderProgram::CompileAndLink()
 
 	// Clean up by detaching
 	for (const int32_t shaderID : m_ShaderStages)
+	{
 		glDetachShader(m_ProgramID, shaderID);
+		glDeleteShader(shaderID);
+	}
+	m_ShaderStages.clear();
 
 	m_IsCompiled = true;
 	
 	return m_ProgramID;
+}
+
+void ShaderProgram::BindAttributes()
+{
 }
 
 void ShaderProgram::BindAttribute(int attribute, std::string_view variableName)
@@ -126,8 +146,6 @@ void ShaderProgram::BindAttribute(int attribute, std::string_view variableName)
 
 void ShaderProgram::CleanUp()
 {
-	for (const int32_t shaderID : m_ShaderStages)
-		glDeleteShader(shaderID);
 	glDeleteProgram(m_ProgramID);
 }
 
@@ -148,6 +166,7 @@ const char* ShaderProgram::GetShaderTypeString(GLenum type)
 	case GL_COMPUTE_SHADER:
 		return "Compute Shader";
 	default:
-		return fmt::format("Unknown Shader Type ({0})", type).c_str();
+		return "Unknown Shader Type"; // Dynamic string doesn't work here, either pointer to freed or memory leak.
+		// return fmt::format("Unknown Shader Type ({0})", type).c_str();
 	}
 }

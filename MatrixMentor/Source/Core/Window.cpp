@@ -338,7 +338,7 @@ void Window::Run()
 		printFPSTimer -= static_cast<float>(GetDeltaTime());
 		if (printFPSTimer <= 0)
 		{
-			MM_INFO("FPS: {0}", 1 / m_UnscaledDeltaTime);
+			MM_INFO("FPS: {0}", std::roundf(1 / m_UnscaledDeltaTime));
 			printFPSTimer = 1;
 		}
 
@@ -352,8 +352,7 @@ void Window::Run()
 		for (Layer* layer : m_Layers)
 			layer->OnRender();
 
-		Input::m_KeysDownLastFrame = Input::m_KeysDownNow;
-		Input::m_KeysDownNow.reset();
+		Input::UpdateInput();
 		
 		glfwSwapBuffers(m_Window);
 	}
@@ -482,6 +481,7 @@ Window::~Window()
 
 	// Delete input instance
 	delete Input::s_Instance;
+	Input::s_Instance = nullptr;
 
 	// For now, assume there's only one window, so terminate on destruction.
 	if (m_Window)

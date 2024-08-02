@@ -11,8 +11,7 @@ public:
 	BaseOpenGLLayer();
 
 private:
+	void OnUpdate(double deltaSeconds) override;
 	void OnEvent(Event& event) override;
 	static bool OnResize(const WindowResizeEvent& e);
-
-	Ref<ShaderProgram> m_ShaderTest;
 };
