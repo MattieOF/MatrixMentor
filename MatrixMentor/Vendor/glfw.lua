@@ -10,7 +10,6 @@ project "GLFW"
 	{
 		"glfw/include/GLFW/glfw3.h",
 		"glfw/include/GLFW/glfw3native.h",
-		"glfw/src/glfw_config.h",
 		"glfw/src/context.c",
 		"glfw/src/init.c",
 		"glfw/src/input.c",

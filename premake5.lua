@@ -27,7 +27,9 @@ project "MatrixMentor"
 	targetdir ("Build/%{prj.name}/" .. outputdir)
 	objdir ("Build/%{prj.name}/Intermediates/" .. outputdir)
 
-	pchheader "mmpch.h"
+	usestandardpreprocessor 'On'
+
+	pchheader(iif(_ACTION == "vs2022", "mmpch.h", "MatrixMentor/MatrixMentor/Include/mmpch.h"))
 	pchsource "MatrixMentor/Source/mmpch.cpp"
 
 	vpaths {
