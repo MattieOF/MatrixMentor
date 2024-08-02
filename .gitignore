@@ -428,3 +428,6 @@ Build
 *.vcxproj
 *.sln
 bin-int
+
+*.cmake
+CMakeLists.txt

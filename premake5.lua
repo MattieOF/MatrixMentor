@@ -1,3 +1,6 @@
+require "cmake"
+require "clion"
+
 workspace "MatrixMentor"
 	configurations { "Debug", "Release", "Dist" }
 	platforms { "Win64" }
