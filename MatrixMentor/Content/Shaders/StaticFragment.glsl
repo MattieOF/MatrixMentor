@@ -1,10 +1,12 @@
 #version 410 core
 
-layout(location = 0) in vec3 colour;
+in vec2 passUV;
 
 out vec4 outColour;
 
-void main() 
+uniform sampler2D textureSampler;
+
+void main()
 {
-    outColour = vec4(colour, 1.0);
+    outColour = texture(textureSampler, passUV);
 }

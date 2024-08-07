@@ -12,4 +12,5 @@ StaticShader::StaticShader() : ShaderProgram("Static Shader")
 void StaticShader::BindAttributes()
 {
 	BindAttribute(0, "inPosition");
+	BindAttribute(1, "inUV");
 }

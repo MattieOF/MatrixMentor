@@ -4,10 +4,9 @@
 #include "Core/Input/Input.h"
 #include "Core/Events/Events.h"
 #include "Core/Rendering/BaseOpenGLLayer.h"
-#include "Core/Rendering/RawModel.h"
 #include "Core/Rendering/Renderer.h"
-#include "Core/Rendering/Shaders/ShaderProgram.h"
 #include "Core/Rendering/Shaders/StaticShader.h"
+#include "Core/Rendering/TexturedModel.h"
 
 class QuadTestLayer : public Layer
 {
@@ -21,18 +20,27 @@ public:
 			0.5f, 0.5f, 0.f,
 		};
 
+        std::vector<float> texCoords = {
+                0, 0,
+                0, 1,
+                1, 1,
+                1, 0,
+        };
+
 		std::vector<uint32_t> indices = {
-			0, 1, 3, 3, 1, 2
+			0, 1, 3, 3, 1, 2,
 		};
 
-		m_Rectangle = new RawModel(verticies, indices);
+		m_Rectangle = CreateRef<RawModel>(verticies, texCoords, indices);
 
 		m_ShaderTest = ShaderProgram::CreateShaderProgram("Test Shader");
 		m_ShaderTest->BindAttribute(0, "inPosition");
 		m_ShaderTest->AddStageFromFile(GL_VERTEX_SHADER, "Content/Shaders/BasicVertex.glsl");
 		m_ShaderTest->AddStageFromFile(GL_FRAGMENT_SHADER, "Content/Shaders/BasicFragment.glsl");
-		// m_ShaderTest->AddStageFromFile(GL_FRAGMENT_SHADER, "Content/Shaders/SecondFragmentTest.glsl");
         m_ShaderTest->LinkProgram();
+
+        auto testTexture = CreateRef<Texture>("Content/Textures/PUPPY.jpg");
+        m_TexturedModel = CreateRef<TexturedModel>(m_Rectangle, testTexture);
 
 		m_StaticShader = CreateRef<StaticShader>();
 		m_StaticShader->Bind();
@@ -40,7 +48,7 @@ public:
 
 	void OnRender() override
 	{
-		Renderer::RenderModel(m_Rectangle);
+		Renderer::RenderTexturedModel(m_TexturedModel.get());
 	}
 	
 	void OnEvent(Event& event) override
@@ -65,7 +73,8 @@ public:
 	}
 
 private:
-	RawModel* m_Rectangle;
+	Ref<RawModel> m_Rectangle;
+    Ref<TexturedModel> m_TexturedModel;
 
 	Ref<ShaderProgram> m_ShaderTest, m_StaticShader;
 };

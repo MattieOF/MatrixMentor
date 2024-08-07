@@ -3,7 +3,7 @@
 class RawModel
 {
 public:
-	explicit RawModel(const std::vector<float>& vertices, const std::vector<uint32_t>& indices);
+	explicit RawModel(const std::vector<float>& vertices, const std::vector<float>& texCoords, const std::vector<uint32_t>& indices);
 	~RawModel();
 
 	void BindIndiciesBuffer(const std::vector<uint32_t>& indices);

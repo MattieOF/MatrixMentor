@@ -1,11 +1,12 @@
 #version 410 core
 
 in vec3 inPosition;
+in vec2 inUV;
 
-out vec3 colour;
+out vec2 passUV;
 
 void main() 
 {
     gl_Position = vec4(inPosition, 1.0);
-    colour = vec3(inPosition.x + 0.5, 1.0, inPosition.y + 0.5);
+    passUV = inUV; // Pass through UVs
 }
