@@ -32,7 +32,7 @@ public:
 		m_ShaderTest->AddStageFromFile(GL_VERTEX_SHADER, "Content/Shaders/BasicVertex.glsl");
 		m_ShaderTest->AddStageFromFile(GL_FRAGMENT_SHADER, "Content/Shaders/BasicFragment.glsl");
 		// m_ShaderTest->AddStageFromFile(GL_FRAGMENT_SHADER, "Content/Shaders/SecondFragmentTest.glsl");
-		m_ShaderTest->CompileAndLink();
+        m_ShaderTest->LinkProgram();
 
 		m_StaticShader = CreateRef<StaticShader>();
 		m_StaticShader->Bind();

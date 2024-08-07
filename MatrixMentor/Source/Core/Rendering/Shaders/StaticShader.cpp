@@ -6,7 +6,7 @@ StaticShader::StaticShader() : ShaderProgram("Static Shader")
 {
 	AddStageFromFile(GL_VERTEX_SHADER, "Content/Shaders/StaticVertex.glsl");
 	AddStageFromFile(GL_FRAGMENT_SHADER, "Content/Shaders/StaticFragment.glsl");
-	CompileAndLink();
+    LinkProgram();
 }
 
 void StaticShader::BindAttributes()

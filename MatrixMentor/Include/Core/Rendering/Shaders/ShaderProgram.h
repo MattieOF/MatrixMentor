@@ -11,13 +11,13 @@ public:
 	static FORCEINLINE Ref<ShaderProgram> CreateShaderProgram(std::string_view name) { return CreateRef<ShaderProgram>(name); }
 	int32_t AddStageFromSource(GLenum stage, std::string_view source);
 	int32_t AddStageFromFile(GLenum stage, std::string_view source);
-	int32_t CompileAndLink();
+	int32_t LinkProgram();
 	
 	// Binding functions
 	FORCEINLINE void Bind() const { glUseProgram(m_ProgramID); }
 	static FORCEINLINE void Unbind() { glUseProgram(0); }
 	
-	FORCEINLINE bool IsCompiled() const { return m_IsCompiled; }
+	FORCEINLINE bool IsComplete() const { return m_IsComplete; }
 	FORCEINLINE bool HasError() const { return m_HasError; }
 
 	virtual void BindAttributes();
@@ -38,5 +38,5 @@ private:
 
 	std::string m_Name = "Untitled Shader";
 	int32_t m_ProgramID = -1;
-	bool m_IsCompiled = false, m_HasError = false;
+	bool m_IsComplete = false, m_HasError = false;
 };

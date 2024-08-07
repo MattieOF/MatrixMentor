@@ -15,9 +15,9 @@ ShaderProgram::~ShaderProgram()
 
 int32_t ShaderProgram::AddStageFromSource(GLenum stage, std::string_view source)
 {
-	if (m_IsCompiled)
+	if (m_IsComplete)
 	{
-		MM_ERROR("In shader \"{0}\", attempting to add a stage to a compiled shader!", m_Name);
+		MM_ERROR("In shader \"{0}\", attempting to add a stage to a linked shader!", m_Name);
 		return -1;
 	}
 
@@ -56,9 +56,9 @@ int32_t ShaderProgram::AddStageFromSource(GLenum stage, std::string_view source)
 
 int32_t ShaderProgram::AddStageFromFile(GLenum stage, std::string_view source)
 {
-	if (m_IsCompiled)
+	if (m_IsComplete)
 	{
-		MM_ERROR("In shader \"{0}\", attempting to add a stage to a compiled shader!", m_Name);
+		MM_ERROR("In shader \"{0}\", attempting to add a stage to a linked shader!", m_Name);
 		return -1;
 	}
 
@@ -81,7 +81,7 @@ int32_t ShaderProgram::AddStageFromFile(GLenum stage, std::string_view source)
 	return result;
 }
 
-int32_t ShaderProgram::CompileAndLink()
+int32_t ShaderProgram::LinkProgram()
 {
 	BindAttributes();
 
@@ -99,7 +99,7 @@ int32_t ShaderProgram::CompileAndLink()
 	glGetProgramiv(m_ProgramID, GL_LINK_STATUS, &success);
 	if (success == GL_FALSE)
 	{
-		// Uh oh, we failed to compile. Lets print out a reason.
+		// Uh oh, we failed to link. Let's print out a reason.
 		m_HasError = true;
 
 		// Get error log and print it
@@ -129,13 +129,14 @@ int32_t ShaderProgram::CompileAndLink()
 	}
 	m_ShaderStages.clear();
 
-	m_IsCompiled = true;
+    m_IsComplete = true;
 	
 	return m_ProgramID;
 }
 
 void ShaderProgram::BindAttributes()
 {
+    // This function can be overridden by child shader programs to bind attributes
 }
 
 void ShaderProgram::BindAttribute(int attribute, std::string_view variableName)
