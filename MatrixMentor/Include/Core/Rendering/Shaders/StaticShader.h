@@ -9,4 +9,7 @@ public:
     StaticShader();
 
     void BindAttributes() override;
+    void GetUniformLocations() override;
+
+    void LoadTransformationMatrix(const glm::mat4& matrix) const;
 };

@@ -19,6 +19,10 @@
 // Assertion
 #include "ppk_assert.h"
 
+// GLM
+#include "glm.hpp"
+#include "gtc/type_ptr.hpp"
+
 // Core project files
 #include "Core/MatrixMentorCore.h"
 #include "Core/MatrixMentorLog.h"

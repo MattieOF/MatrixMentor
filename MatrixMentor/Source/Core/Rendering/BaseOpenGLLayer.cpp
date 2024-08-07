@@ -10,10 +10,6 @@ BaseOpenGLLayer::BaseOpenGLLayer()
 {
 }
 
-void BaseOpenGLLayer::OnUpdate(double deltaSeconds)
-{
-}
-
 void BaseOpenGLLayer::OnEvent(Event& event)
 {
 	EventDispatcher dispatcher(event);

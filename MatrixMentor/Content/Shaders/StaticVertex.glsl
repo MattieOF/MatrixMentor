@@ -5,8 +5,10 @@ in vec2 inUV;
 
 out vec2 passUV;
 
+uniform mat4 transformMatrix;
+
 void main() 
 {
-    gl_Position = vec4(inPosition, 1.0);
+    gl_Position = transformMatrix * vec4(inPosition, 1.0);
     passUV = inUV; // Pass through UVs
 }

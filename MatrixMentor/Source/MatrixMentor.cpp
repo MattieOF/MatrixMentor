@@ -7,6 +7,7 @@
 #include "Core/Rendering/Renderer.h"
 #include "Core/Rendering/Shaders/StaticShader.h"
 #include "Core/Rendering/TexturedModel.h"
+#include "Core/Utility/MathUtil.h"
 
 class QuadTestLayer : public Layer
 {
@@ -32,7 +33,7 @@ public:
 		};
 
 		m_Rectangle = CreateRef<RawModel>(verticies, texCoords, indices);
-
+		
 		m_ShaderTest = ShaderProgram::CreateShaderProgram("Test Shader");
 		m_ShaderTest->BindAttribute(0, "inPosition");
 		m_ShaderTest->AddStageFromFile(GL_VERTEX_SHADER, "Content/Shaders/BasicVertex.glsl");
@@ -48,7 +49,17 @@ public:
 
 	void OnRender() override
 	{
+		m_StaticShader->LoadTransformationMatrix(MathUtil::CreateTransformationMatrix(glm::vec3(0),
+			glm::vec3(0, 0, m_TestRot), glm::vec3(m_TestScale)));	
 		Renderer::RenderTexturedModel(m_TexturedModel.get());
+	}
+
+	void OnUpdate(double deltaSeconds) override
+	{
+		m_TestScale += static_cast<float>(deltaSeconds) / 10;
+		if (Input::IsKeyJustDown(MM_KEY_S))
+			m_TestScale += 0.2f;
+		m_TestRot += static_cast<float>(deltaSeconds) * 10;
 	}
 	
 	void OnEvent(Event& event) override
@@ -76,7 +87,10 @@ private:
 	Ref<RawModel> m_Rectangle;
     Ref<TexturedModel> m_TexturedModel;
 
-	Ref<ShaderProgram> m_ShaderTest, m_StaticShader;
+	Ref<ShaderProgram> m_ShaderTest;
+	Ref<StaticShader> m_StaticShader;
+
+	float m_TestScale = 1.f, m_TestRot = 0;
 };
 
 int main()

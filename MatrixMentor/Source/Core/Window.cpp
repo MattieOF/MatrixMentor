@@ -338,7 +338,7 @@ void Window::Run()
 		printFPSTimer -= static_cast<float>(GetDeltaTime());
 		if (printFPSTimer <= 0)
 		{
-			MM_INFO("FPS: {0}", std::roundf(1 / m_UnscaledDeltaTime));
+			MM_INFO("FPS: {0}", std::roundf(1 / static_cast<float>(m_UnscaledDeltaTime)));
 			printFPSTimer = 1;
 		}
 

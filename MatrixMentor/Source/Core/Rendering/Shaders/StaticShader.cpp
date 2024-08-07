@@ -14,3 +14,14 @@ void StaticShader::BindAttributes()
 	BindAttribute(0, "inPosition");
 	BindAttribute(1, "inUV");
 }
+
+void StaticShader::GetUniformLocations()
+{
+	// Cache uniform locations
+	GetUniformLocation("transformMatrix");
+}
+
+void StaticShader::LoadTransformationMatrix(const glm::mat4& matrix) const
+{
+	SetUniformMatrix4f("transformMatrix", matrix);
+}

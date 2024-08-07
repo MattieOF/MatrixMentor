@@ -129,6 +129,8 @@ int32_t ShaderProgram::LinkProgram()
 	}
 	m_ShaderStages.clear();
 
+    GetUniformLocations();
+
     m_IsComplete = true;
 	
 	return m_ProgramID;
@@ -170,4 +172,90 @@ const char* ShaderProgram::GetShaderTypeString(GLenum type)
 		return "Unknown Shader Type"; // Dynamic string doesn't work here, either pointer to freed or memory leak.
 		// return fmt::format("Unknown Shader Type ({0})", type).c_str();
 	}
+}
+
+int ShaderProgram::GetUniformLocation(std::string_view uniformName)
+{
+	auto pos = m_UniformLocations.find(uniformName.data());
+	if (pos == m_UniformLocations.end())
+	{
+		int location = glGetUniformLocation(m_ProgramID, uniformName.data());
+		if (location == -1)
+			MM_WARN("Uniform \"{0}\" not found in shader \"{1}\"", uniformName, m_Name);
+		m_UniformLocations[std::string(uniformName)] = location;
+		return location;
+	} 
+	return pos->second;
+}
+
+int ShaderProgram::GetUniformLocation(std::string_view uniformName) const
+{
+	auto pos = m_UniformLocations.find(uniformName.data());
+	if (pos == m_UniformLocations.end())
+	{
+		int location = glGetUniformLocation(m_ProgramID, uniformName.data());
+		if (location == -1)
+			MM_WARN("Uniform \"{0}\" not found in shader \"{1}\"", uniformName, m_Name);
+		return location;
+	} 
+	return pos->second;
+}
+
+void ShaderProgram::GetUniformLocations()
+{
+}
+
+void ShaderProgram::SetUniform1i(std::string_view uniformName, int value) const
+{
+    glUniform1i(GetUniformLocation(uniformName), value);
+}
+
+void ShaderProgram::SetUniform1f(std::string_view uniformName, float value) const
+{
+    glUniform1f(GetUniformLocation(uniformName), value);
+}
+
+void ShaderProgram::SetUniform2f(std::string_view uniformName, float x, float y) const
+{
+    glUniform2f(GetUniformLocation(uniformName), x, y);
+}
+
+void ShaderProgram::SetUniformVec2(std::string_view uniformName, const glm::vec2& vec) const
+{
+	glUniform2f(GetUniformLocation(uniformName), vec.x, vec.y);
+}
+
+void ShaderProgram::SetUniform3f(std::string_view uniformName, float x, float y, float z) const
+{
+    glUniform3f(GetUniformLocation(uniformName), x, y, z);
+}
+
+void ShaderProgram::SetUniformVec3(std::string_view uniformName, const glm::vec3& vec) const
+{
+	glUniform3f(GetUniformLocation(uniformName), vec.x, vec.y, vec.z);
+}
+
+void ShaderProgram::SetUniform4f(std::string_view uniformName, float x, float y, float z, float w) const
+{
+    glUniform4f(GetUniformLocation(uniformName), x, y, z, w);
+}
+
+void ShaderProgram::SetUniformVec4(std::string_view uniformName, const glm::vec4& vec) const
+{
+	glUniform4f(GetUniformLocation(uniformName), vec.x, vec.y, vec.z, vec.w);
+}
+
+void ShaderProgram::SetUniformMatrix3f(std::string_view uniformName, const glm::mat3& vec) const
+{
+	glUniformMatrix3fv(GetUniformLocation(uniformName), 1, GL_FALSE, value_ptr(vec));
+}
+
+void ShaderProgram::SetUniformMatrix4f(std::string_view uniformName, const glm::mat4& matrix) const
+{
+	glUniformMatrix4fv(GetUniformLocation(uniformName), 1, GL_FALSE, value_ptr(matrix));
+}
+
+void ShaderProgram::SetUniform1b(std::string_view uniformName, bool value) const
+{
+    glUniform1i(GetUniformLocation(uniformName), value ? 1 : 0);
 }
