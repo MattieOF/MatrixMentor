@@ -136,6 +136,12 @@ int32_t ShaderProgram::LinkProgram()
 	return m_ProgramID;
 }
 
+void ShaderProgram::Bind() const
+{
+	MM_ASSERT_ERROR(m_ProgramID != 0, "Attempting to bind to invalid shader (invalid program ID)");
+	glUseProgram(m_ProgramID);
+}
+
 void ShaderProgram::BindAttributes()
 {
     // This function can be overridden by child shader programs to bind attributes
@@ -150,6 +156,7 @@ void ShaderProgram::BindAttribute(int attribute, std::string_view variableName)
 void ShaderProgram::CleanUp()
 {
 	glDeleteProgram(m_ProgramID);
+	m_ProgramID = 0;
 }
 
 const char* ShaderProgram::GetShaderTypeString(GLenum type)

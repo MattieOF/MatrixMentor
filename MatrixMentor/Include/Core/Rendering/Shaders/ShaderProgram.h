@@ -16,7 +16,7 @@ public:
 	int32_t LinkProgram();
 	
 	// Binding functions
-	FORCEINLINE void Bind() const { glUseProgram(m_ProgramID); }
+	void Bind() const;
 	static FORCEINLINE void Unbind() { glUseProgram(0); }
 
     // Uniform functions

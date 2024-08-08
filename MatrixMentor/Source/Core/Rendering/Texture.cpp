@@ -29,6 +29,7 @@ Texture::Texture(std::string_view filename, TextureSpecification spec)
 void Texture::CleanUp()
 {
     glDeleteTextures(1, &m_TextureID);
+    m_TextureID = 0;
 }
 
 Texture::~Texture()
@@ -38,6 +39,8 @@ Texture::~Texture()
 
 void Texture::Activate(int slot) const
 {
+    MM_ASSERT_ERROR(m_TextureID != 0, "Texture activated when not initialized");
+    
     glActiveTexture(GL_TEXTURE0 + slot);
     glBindTexture(GL_TEXTURE_2D, m_TextureID);
 }
