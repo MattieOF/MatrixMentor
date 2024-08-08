@@ -9,6 +9,8 @@ public:
 	virtual ~ShaderProgram();
 	ShaderProgram(ShaderProgram&& other) noexcept = delete; // Disallow move constructor
 	ShaderProgram(const ShaderProgram& other) = delete; // Disallow copy constructor
+	ShaderProgram& operator=(const ShaderProgram& other) = delete; // Disallow copy assignment
+	ShaderProgram& operator=(ShaderProgram&& other) noexcept = delete; // Disallow move assignment
 
 	static FORCEINLINE Ref<ShaderProgram> CreateShaderProgram(std::string_view name) { return CreateRef<ShaderProgram>(name); }
 	int32_t AddStageFromSource(GLenum stage, std::string_view source);

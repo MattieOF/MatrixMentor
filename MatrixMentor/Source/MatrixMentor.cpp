@@ -7,7 +7,7 @@
 #include "Core/Rendering/Renderer.h"
 #include "Core/Rendering/Shaders/StaticShader.h"
 #include "Core/Rendering/TexturedModel.h"
-#include "Core/Utility/MathUtil.h"
+#include "Core/Entity/Entity.h"
 
 class QuadTestLayer : public Layer
 {
@@ -32,16 +32,10 @@ public:
 			0, 1, 3, 3, 1, 2,
 		};
 
-		m_Rectangle = CreateRef<RawModel>(verticies, texCoords, indices);
-		
-		m_ShaderTest = ShaderProgram::CreateShaderProgram("Test Shader");
-		m_ShaderTest->BindAttribute(0, "inPosition");
-		m_ShaderTest->AddStageFromFile(GL_VERTEX_SHADER, "Content/Shaders/BasicVertex.glsl");
-		m_ShaderTest->AddStageFromFile(GL_FRAGMENT_SHADER, "Content/Shaders/BasicFragment.glsl");
-        m_ShaderTest->LinkProgram();
-
+		auto rectangleMesh = CreateRef<RawModel>(verticies, texCoords, indices);
         auto testTexture = CreateRef<Texture>("Content/Textures/PUPPY.jpg");
-        m_TexturedModel = CreateRef<TexturedModel>(m_Rectangle, testTexture);
+        auto texturedModel = CreateRef<TexturedModel>(rectangleMesh, testTexture);
+		m_TestEntity = CreateRef<Entity>(texturedModel);
 
 		m_StaticShader = CreateRef<StaticShader>();
 		m_StaticShader->Bind();
@@ -49,21 +43,19 @@ public:
 
 	void OnRender() override
 	{
-		m_StaticShader->LoadTransformationMatrix(MathUtil::CreateTransformationMatrix(glm::vec3(0),
-			glm::vec3(0, 0, m_TestRot), glm::vec3(m_TestScale)));	
-		Renderer::RenderTexturedModel(m_TexturedModel.get());
+		Renderer::RenderEntity(m_TestEntity.get(), m_StaticShader.get());
 	}
 
 	void OnUpdate(double deltaSeconds) override
 	{
-		m_TestScale += static_cast<float>(deltaSeconds) / 10;
+		m_TestEntity->GetTransform().Scale += static_cast<float>(deltaSeconds) / 10;
 		if (Input::IsKeyJustDown(MM_KEY_S))
-			m_TestScale += 0.2f;
+			m_TestEntity->GetTransform().Scale += 0.2f;
 
 		if (Input::IsKeyDown(MM_KEY_A))
-			m_TestRot += static_cast<float>(deltaSeconds) * 10;
+			m_TestEntity->GetTransform().Rotation.z += static_cast<float>(deltaSeconds) * 10;
 		if (Input::IsKeyDown(MM_KEY_D))
-			m_TestRot -= static_cast<float>(deltaSeconds) * 10;
+			m_TestEntity->GetTransform().Rotation.z -= static_cast<float>(deltaSeconds) * 10;
 	}
 	
 	void OnEvent(Event& event) override
@@ -88,13 +80,8 @@ public:
 	}
 
 private:
-	Ref<RawModel> m_Rectangle;
-    Ref<TexturedModel> m_TexturedModel;
-
-	Ref<ShaderProgram> m_ShaderTest;
 	Ref<StaticShader> m_StaticShader;
-
-	float m_TestScale = 1.f, m_TestRot = 0;
+	Ref<Entity> m_TestEntity;
 };
 
 int main()
