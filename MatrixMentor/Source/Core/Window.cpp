@@ -333,6 +333,7 @@ void Window::Run()
 	{
 		const double frametime = glfwGetTime();
 		m_UnscaledDeltaTime = frametime - lastFrametime;
+		m_UnscaledDeltaTime = std::max(0.0, m_UnscaledDeltaTime);
 		lastFrametime = frametime;
 
 		printFPSTimer -= static_cast<float>(GetDeltaTime());

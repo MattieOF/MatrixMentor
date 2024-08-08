@@ -59,7 +59,11 @@ public:
 		m_TestScale += static_cast<float>(deltaSeconds) / 10;
 		if (Input::IsKeyJustDown(MM_KEY_S))
 			m_TestScale += 0.2f;
-		m_TestRot += static_cast<float>(deltaSeconds) * 10;
+
+		if (Input::IsKeyDown(MM_KEY_A))
+			m_TestRot += static_cast<float>(deltaSeconds) * 10;
+		if (Input::IsKeyDown(MM_KEY_D))
+			m_TestRot -= static_cast<float>(deltaSeconds) * 10;
 	}
 	
 	void OnEvent(Event& event) override
