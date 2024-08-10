@@ -15,7 +15,7 @@ class QuadTestLayer : public Layer
 public:
 	QuadTestLayer()
 	{
-		std::vector<float> verticies = {
+		std::vector<float> vertices = {
 			-0.5f,0.5f,-0.5f,	
 			-0.5f,-0.5f,-0.5f,	
 			0.5f,-0.5f,-0.5f,	
@@ -89,7 +89,7 @@ public:
 			23, 21, 22
 		};
 
-		auto rectangleMesh = CreateRef<RawModel>(verticies, texCoords, indices);
+		auto rectangleMesh = CreateRef<RawModel>(vertices, texCoords, indices);
         auto testTexture = CreateRef<Texture>("Content/Textures/PUPPY.jpg");
         auto texturedModel = CreateRef<TexturedModel>(rectangleMesh, testTexture);
 		m_TestEntity = CreateRef<Entity>(texturedModel);
@@ -114,6 +114,11 @@ public:
 			m_TestEntity->GetTransform().Rotation.z += static_cast<float>(deltaSeconds) * 10;
 		if (Input::IsKeyDown(MM_KEY_D))
 			m_TestEntity->GetTransform().Rotation.z -= static_cast<float>(deltaSeconds) * 10;
+
+		float speed = 5;
+		if (Input::IsKeyDown(MM_KEY_LEFT_SHIFT))
+			speed *= 4;
+		m_TestEntity->GetTransform().Rotation += glm::vec3(speed * deltaSeconds);
 
 		if (Input::IsKeyDown(MM_KEY_W))
 			m_TestEntity->GetTransform().Position.z += static_cast<float>(deltaSeconds);
