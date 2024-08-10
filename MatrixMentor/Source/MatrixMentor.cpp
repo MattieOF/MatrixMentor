@@ -118,7 +118,7 @@ public:
 		float speed = 5;
 		if (Input::IsKeyDown(MM_KEY_LEFT_SHIFT))
 			speed *= 4;
-		m_TestEntity->GetTransform().Rotation += glm::vec3(speed * deltaSeconds);
+		m_TestEntity->GetTransform().Rotation += glm::vec3(speed * static_cast<float>(deltaSeconds));
 
 		if (Input::IsKeyDown(MM_KEY_W))
 			m_TestEntity->GetTransform().Position.z += static_cast<float>(deltaSeconds);
