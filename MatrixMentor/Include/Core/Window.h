@@ -2,6 +2,7 @@
 
 #include "Layer.h"
 
+struct ImGuiIO;
 // Forward defs
 struct GLFWwindow;
 

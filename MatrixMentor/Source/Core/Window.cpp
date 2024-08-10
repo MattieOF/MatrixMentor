@@ -4,7 +4,11 @@
 
 #include <glad/gl.h>
 #include <GLFW/glfw3.h> // Include after glad!
+#define IMGUI_IMPL_OPENGL_LOADER_CUSTOM 
+#include <backends/imgui_impl_glfw.h>
+#include <backends/imgui_impl_opengl3.h>
 
+#include "imgui.h"
 #include "Core/Events/ApplicationEvent.h"
 #include "Core/Events/KeyEvent.h"
 #include "Core/Events/MouseEvent.h"
@@ -159,6 +163,7 @@ bool Window::Create(const WindowSpecification& spec, Window*& outWindow)
 	}
 
 	GLFWwindow* window = nullptr;
+	glfwDefaultWindowHints();
 	glfwWindowHint(GLFW_VISIBLE, false);
 	glfwWindowHint(GLFW_RESIZABLE, spec.Resizeable);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, spec.GLSettings.Major);
@@ -223,6 +228,27 @@ bool Window::Create(const WindowSpecification& spec, Window*& outWindow)
 	glDebugMessageCallback(GLErrorCallback, nullptr);
 #endif
 
+	// Initialise ImGui
+	IMGUI_CHECKVERSION();
+	ImGui::CreateContext();
+	auto io = ImGui::GetIO();
+	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
+	io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
+	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;         // Enable Docking
+	io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;       // Enable Multi-Viewport / Platform Windows
+	ImGui::StyleColorsDark();
+
+	ImGuiStyle& style = ImGui::GetStyle();
+	if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+	{
+		style.WindowRounding = 0.0f;
+		style.Colors[ImGuiCol_WindowBg].w = 1.0f;
+	}
+	
+	// Setup Platform/Renderer backends
+	ImGui_ImplGlfw_InitForOpenGL(window, true);
+	ImGui_ImplOpenGL3_Init("#version 410 core");
+
 	// Init input
 	delete Input::s_Instance;
 	Input::s_Instance = new GlfwInput();
@@ -252,6 +278,10 @@ bool Window::Create(const WindowSpecification& spec, Window*& outWindow)
 
 	glfwSetKeyCallback(window, [](GLFWwindow* window, int key, int scancode, int action, int mods)
 	{
+		ImGui_ImplGlfw_KeyCallback(window, key, scancode, action, mods);
+		if (ImGui::GetIO().WantCaptureKeyboard)
+			return;
+		
 		const WindowData& data = *static_cast<WindowData*>(glfwGetWindowUserPointer(window));
 		switch (action)
 		{
@@ -279,6 +309,10 @@ bool Window::Create(const WindowSpecification& spec, Window*& outWindow)
 
 	glfwSetCharCallback(window, [](GLFWwindow* window, unsigned codepoint)
 	{
+		ImGui_ImplGlfw_CharCallback(window, codepoint);
+		if (ImGui::GetIO().WantCaptureKeyboard)
+			return;
+		
 		const WindowData& data = *static_cast<WindowData*>(glfwGetWindowUserPointer(window));
 		KeyTypedEvent e(codepoint);
 		data.EventCallback(e);
@@ -286,6 +320,10 @@ bool Window::Create(const WindowSpecification& spec, Window*& outWindow)
 
 	glfwSetMouseButtonCallback(window, [](GLFWwindow* window, int button, int action, int mods)
 	{
+		ImGui_ImplGlfw_MouseButtonCallback(window, button, action, mods);
+		if (ImGui::GetIO().WantCaptureMouse)
+			return;
+		
 		const WindowData& data = *static_cast<WindowData*>(glfwGetWindowUserPointer(window));
 
 		switch (action)
@@ -308,6 +346,10 @@ bool Window::Create(const WindowSpecification& spec, Window*& outWindow)
 
 	glfwSetScrollCallback(window, [](GLFWwindow* window, double xoffset, double yoffset)
 	{
+		ImGui_ImplGlfw_ScrollCallback(window, xoffset, yoffset);
+		if (ImGui::GetIO().WantCaptureMouse)
+			return;
+		
 		const WindowData& data = *static_cast<WindowData*>(glfwGetWindowUserPointer(window));
 		MouseScrolledEvent e(xoffset, yoffset);
 		data.EventCallback(e);
@@ -315,6 +357,10 @@ bool Window::Create(const WindowSpecification& spec, Window*& outWindow)
 
 	glfwSetCursorPosCallback(window, [](GLFWwindow* window, double xpos, double ypos)
 	{
+		ImGui::GetIO().AddMousePosEvent(static_cast<float>(xpos), static_cast<float>(ypos));
+		if (ImGui::GetIO().WantCaptureMouse)
+			return;
+		
 		const WindowData& data = *static_cast<WindowData*>(glfwGetWindowUserPointer(window));
 		MouseMovedEvent e(static_cast<float>(xpos), static_cast<float>(ypos));
 		data.EventCallback(e);
@@ -353,6 +399,27 @@ void Window::Run()
 		for (Layer* layer : m_Layers)
 			layer->OnRender();
 
+		// ImGui frame
+		ImGui_ImplOpenGL3_NewFrame();
+		ImGui_ImplGlfw_NewFrame();
+		ImGui::NewFrame();
+
+		for (Layer* layer : m_Layers)
+			layer->OnImGuiRender();
+		
+		ImGui::Render();
+        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+
+		// Update and Render additional Platform Windows
+		if (ImGui::GetIO().ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+		{
+			GLFWwindow* backup_current_context = glfwGetCurrentContext();
+			ImGui::UpdatePlatformWindows();
+			ImGui::RenderPlatformWindowsDefault();
+			glfwMakeContextCurrent(backup_current_context);
+		}
+		ImGui::GetIO().DisplaySize = ImVec2(static_cast<float>(m_WindowData.Width), static_cast<float>(m_WindowData.Height));
+
 		Input::UpdateInput();
 		
 		glfwSwapBuffers(m_Window);
@@ -366,12 +433,12 @@ void Window::OnEvent(Event& e)
 	dispatcher.Dispatch<KeyPressedEvent>([](const KeyPressedEvent& keyPressedEvent)
 	{
 		Input::m_KeysDownNow[keyPressedEvent.GetKeyCode()] = true;
-		return true;
+		return false;
 	});
 	dispatcher.Dispatch<KeyReleasedEvent>([](const KeyReleasedEvent& keyReleasedEvent)
 	{
 		Input::m_KeysDownNow[keyReleasedEvent.GetKeyCode()] = false;
-		return true;
+		return false;
 	});
 	
 	// Propagate the event to all layers, starting with the topmost layer/overlay, down to the base layer. 
@@ -483,6 +550,11 @@ Window::~Window()
 	// Delete input instance
 	delete Input::s_Instance;
 	Input::s_Instance = nullptr;
+
+	// Shutdown ImGui
+	ImGui_ImplOpenGL3_Shutdown();
+	ImGui_ImplGlfw_Shutdown();
+	ImGui::DestroyContext();
 
 	// For now, assume there's only one window, so terminate on destruction.
 	if (m_Window)

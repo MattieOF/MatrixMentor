@@ -14,10 +14,12 @@ IncludeDir["PPK_ASSERT"] = "MatrixMentor/Vendor/PPK_ASSERT/Include"
 IncludeDir["GLFW"] = "MatrixMentor/Vendor/GLFW/include"
 IncludeDir["GLAD"] = "MatrixMentor/Vendor/GLAD/include"
 IncludeDir["glm"] = "MatrixMentor/Vendor/glm/"
+IncludeDir["imgui"] = "MatrixMentor/Vendor/imgui/"
 
 group "Vendor"
 	include "MatrixMentor/Vendor/glfw.lua"
 	include "MatrixMentor/Vendor/glad.lua"
+	include "MatrixMentor/Vendor/imgui.lua"
 group ""
 
 project "MatrixMentor"
@@ -52,6 +54,7 @@ project "MatrixMentor"
 		"%{IncludeDir.GLAD}",
 		"%{IncludeDir.PPK_ASSERT}",
 		"%{IncludeDir.glm}",
+		"%{IncludeDir.imgui}",
 
 		"MatrixMentor/Include"
 	}
@@ -60,6 +63,7 @@ project "MatrixMentor"
 	{
 		"GLFW",
 		"GLAD",
+		"imgui",
 		"opengl32.lib"
 	}
 

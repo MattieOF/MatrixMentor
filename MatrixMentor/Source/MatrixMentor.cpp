@@ -9,6 +9,9 @@
 #include "Core/Rendering/TexturedModel.h"
 #include "Core/Rendering/Camera.h"
 #include "Core/Entity/Entity.h"
+#include "Tests/TestSelectionLayer.h"
+
+bool s_ShouldRestart = false;
 
 class QuadTestLayer : public Layer
 {
@@ -189,6 +192,7 @@ int main()
 
 		window->PushLayer(new BaseOpenGLLayer());
 		window->PushLayer(new QuadTestLayer());
+		window->PushLayer(new TestSelectionLayer());
 
 		window->Run();
 

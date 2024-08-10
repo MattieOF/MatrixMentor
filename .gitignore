@@ -432,3 +432,4 @@ bin-int
 *.cmake
 CMakeLists.txt
 cmake-build-*
+MatrixMentor/imgui.ini

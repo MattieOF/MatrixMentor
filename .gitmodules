@@ -4,3 +4,7 @@
 [submodule "MatrixMentor/Vendor/glfw"]
 	path = MatrixMentor/Vendor/glfw
 	url = https://github.com/glfw/glfw.git
+[submodule "MatrixMentor/Vendor/imgui"]
+	path = MatrixMentor/Vendor/imgui
+	url = https://github.com/ocornut/imgui.git
+	branch = docking
