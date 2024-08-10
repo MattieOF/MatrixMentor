@@ -30,7 +30,10 @@ void Renderer::Begin(const Camera* camera)
 	{
 		StaticShader* staticShader = dynamic_cast<StaticShader*>(const_cast<ShaderProgram*>(m_BoundShader));
 		if (staticShader != nullptr)
+		{
 			staticShader->LoadProjectionMatrix(m_CurrentCamera->GetProjectionMatrix(m_AspectRatio));
+			staticShader->LoadViewMatrix(m_CurrentCamera->GetViewMatrix());
+		}
 	}
 }
 
@@ -42,7 +45,10 @@ void Renderer::End()
 	{
 		StaticShader* staticShader = dynamic_cast<StaticShader*>(const_cast<ShaderProgram*>(m_BoundShader));
 		if (staticShader != nullptr)
+		{
 			staticShader->LoadProjectionMatrix(glm::mat4()); // Reset projection matrix by passing identity matrix
+			staticShader->LoadViewMatrix(glm::mat4()); // Same for view matrix	
+		}
 	}
 }
 
@@ -100,6 +106,9 @@ void Renderer::BindShader(const ShaderProgram* shader)
 	{
 		StaticShader* staticShader = dynamic_cast<StaticShader*>(const_cast<ShaderProgram*>(shader));
 		if (staticShader != nullptr)
+		{
 			staticShader->LoadProjectionMatrix(m_CurrentCamera->GetProjectionMatrix(m_AspectRatio));
+			staticShader->LoadViewMatrix(m_CurrentCamera->GetViewMatrix());
+		}
 	}
 }

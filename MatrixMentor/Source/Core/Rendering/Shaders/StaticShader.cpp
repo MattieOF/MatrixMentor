@@ -20,6 +20,7 @@ void StaticShader::GetUniformLocations()
 	// Cache uniform locations
 	GetUniformLocation("transformMatrix");
 	GetUniformLocation("projectionMatrix");
+	GetUniformLocation("viewMatrix");
 }
 
 void StaticShader::LoadTransformationMatrix(const glm::mat4& matrix) const
@@ -30,4 +31,9 @@ void StaticShader::LoadTransformationMatrix(const glm::mat4& matrix) const
 void StaticShader::LoadProjectionMatrix(const glm::mat4& matrix) const
 {
 	SetUniformMatrix4f("projectionMatrix", matrix);
+}
+
+void StaticShader::LoadViewMatrix(const glm::mat4& matrix) const
+{
+	SetUniformMatrix4f("viewMatrix", matrix);
 }

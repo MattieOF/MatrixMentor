@@ -13,4 +13,5 @@ public:
 
     void LoadTransformationMatrix(const glm::mat4& matrix) const;
     void LoadProjectionMatrix(const glm::mat4& matrix) const;
+    void LoadViewMatrix(const glm::mat4& matrix) const;
 };

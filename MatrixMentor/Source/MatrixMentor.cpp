@@ -68,6 +68,15 @@ public:
 			m_TestEntity->GetTransform().Scale -= static_cast<float>(deltaSeconds) / 2;
 		if (Input::IsKeyDown(MM_KEY_E))
 			m_TestEntity->GetTransform().Scale += static_cast<float>(deltaSeconds) / 2;
+
+		if (Input::IsKeyDown(MM_KEY_LEFT))
+			m_Camera->GetTransform().Position.x -= static_cast<float>(deltaSeconds);
+		if (Input::IsKeyDown(MM_KEY_RIGHT))
+			m_Camera->GetTransform().Position.x += static_cast<float>(deltaSeconds);
+		if (Input::IsKeyDown(MM_KEY_UP))
+			m_Camera->GetTransform().Position.y += static_cast<float>(deltaSeconds);
+		if (Input::IsKeyDown(MM_KEY_DOWN))
+			m_Camera->GetTransform().Position.y -= static_cast<float>(deltaSeconds);
 	}
 	
 	void OnEvent(Event& event) override
