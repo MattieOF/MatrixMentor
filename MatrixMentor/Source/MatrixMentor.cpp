@@ -7,6 +7,7 @@
 #include "Core/Rendering/Renderer.h"
 #include "Core/Rendering/Shaders/StaticShader.h"
 #include "Core/Rendering/TexturedModel.h"
+#include "Core/Rendering/Camera.h"
 #include "Core/Entity/Entity.h"
 
 class QuadTestLayer : public Layer
@@ -36,6 +37,9 @@ public:
         auto testTexture = CreateRef<Texture>("Content/Textures/PUPPY.jpg");
         auto texturedModel = CreateRef<TexturedModel>(rectangleMesh, testTexture);
 		m_TestEntity = CreateRef<Entity>(texturedModel);
+		m_TestEntity->GetTransform().Position = glm::vec3(0, 0, -1);
+
+		m_Camera = CreateRef<Camera>();
 
 		m_StaticShader = CreateRef<StaticShader>();
 		m_StaticShader->Bind();
@@ -43,19 +47,27 @@ public:
 
 	void OnRender() override
 	{
+		Renderer::Begin(m_Camera.get());
 		Renderer::RenderEntity(m_TestEntity.get(), m_StaticShader.get());
+		Renderer::End();
 	}
 
 	void OnUpdate(double deltaSeconds) override
 	{
-		m_TestEntity->GetTransform().Scale += static_cast<float>(deltaSeconds) / 10;
-		if (Input::IsKeyJustDown(MM_KEY_S))
-			m_TestEntity->GetTransform().Scale += 0.2f;
-
 		if (Input::IsKeyDown(MM_KEY_A))
 			m_TestEntity->GetTransform().Rotation.z += static_cast<float>(deltaSeconds) * 10;
 		if (Input::IsKeyDown(MM_KEY_D))
 			m_TestEntity->GetTransform().Rotation.z -= static_cast<float>(deltaSeconds) * 10;
+
+		if (Input::IsKeyDown(MM_KEY_W))
+			m_TestEntity->GetTransform().Position.z += static_cast<float>(deltaSeconds);
+		if (Input::IsKeyDown(MM_KEY_S))
+			m_TestEntity->GetTransform().Position.z -= static_cast<float>(deltaSeconds);
+		
+		if (Input::IsKeyDown(MM_KEY_Q))
+			m_TestEntity->GetTransform().Scale -= static_cast<float>(deltaSeconds) / 2;
+		if (Input::IsKeyDown(MM_KEY_E))
+			m_TestEntity->GetTransform().Scale += static_cast<float>(deltaSeconds) / 2;
 	}
 	
 	void OnEvent(Event& event) override
@@ -81,6 +93,7 @@ public:
 
 private:
 	Ref<StaticShader> m_StaticShader;
+	Ref<Camera> m_Camera;
 	Ref<Entity> m_TestEntity;
 };
 

@@ -7,10 +7,8 @@ class ShaderProgram;
 
 class BaseOpenGLLayer : public Layer
 {
-public:
-	BaseOpenGLLayer();
-
-private:
+	void OnAttach() override;
 	void OnEvent(Event& event) override;
-	static bool OnResize(const WindowResizeEvent& e);
+	bool OnResize(const WindowResizeEvent& e) const;
+	void OnDetach() override;
 };

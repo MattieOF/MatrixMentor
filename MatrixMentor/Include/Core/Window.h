@@ -36,7 +36,7 @@ class Window
 {
 public:
 	Window() = delete;
-	~Window();
+	virtual ~Window();
 
 	static bool Create(const WindowSpecification& spec, Window*& outWindow);
 
@@ -55,6 +55,8 @@ public:
 	[[nodiscard]] FORCEINLINE const char* GetClipboardText() const;
 
 	FORCEINLINE void SetWindowTitle(std::string_view newTitle);
+
+	[[nodiscard]] virtual float GetAspectRatio() const { return static_cast<float>(m_WindowData.Width) / static_cast<float>(m_WindowData.Height); }
 
 	[[nodiscard]] virtual GLFWwindow* GetNativeWindow() const { return m_Window; }
 
