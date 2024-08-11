@@ -23,7 +23,5 @@ public:
 
 protected:
 	Window* m_Window;
-
-private:
 	std::string m_DebugName;
 };

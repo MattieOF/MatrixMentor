@@ -13,11 +13,12 @@
 const ShaderProgram* Renderer::m_BoundShader   = nullptr;
 const Camera*        Renderer::m_CurrentCamera = nullptr;
 float			     Renderer::m_AspectRatio   = 1.f;
+glm::vec4			 Renderer::m_ClearColor    = glm::vec4(0.1f, 0.1f, 0.1f, 1.0f);
 
 void Renderer::Prepare()
 {
 	glEnable(GL_DEPTH_TEST);
-	glClearColor(0.1f, 0.2f, 0.8f, 1.f);
+	glClearColor(m_ClearColor.r, m_ClearColor.g, m_ClearColor.b, m_ClearColor.a);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 }
 

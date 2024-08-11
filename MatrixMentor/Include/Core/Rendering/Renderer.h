@@ -1,7 +1,7 @@
 #pragma once
 
-class Camera;
 // Forward declarations
+class Camera;
 class ShaderProgram;
 class StaticShader;
 class Entity;
@@ -13,6 +13,9 @@ class Renderer
 public:
 	FORCEINLINE static void  SetAspectRatio(float aspectRatio) { m_AspectRatio = aspectRatio; }
 	FORCEINLINE static float GetAspectRatio()                  { return m_AspectRatio; }
+
+	FORCEINLINE static void ResetClearColor()              { m_ClearColor = glm::vec4(0.1f, 0.1f, 0.1f, 1.0f); }
+	FORCEINLINE static void SetClearColor(glm::vec4 color) { m_ClearColor = color; }
 	
 	static void Prepare();
 	static void Begin(const Camera* camera);
@@ -26,6 +29,7 @@ public:
 	static void BindShader(const ShaderProgram* shader);
 	
 private:
+	static glm::vec4 m_ClearColor;
 	static float m_AspectRatio;
 	static const Camera* m_CurrentCamera;
 	static const ShaderProgram* m_BoundShader;
