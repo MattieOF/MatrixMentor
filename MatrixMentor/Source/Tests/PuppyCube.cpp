@@ -1,6 +1,7 @@
 ﻿#include "mmpch.h"
 #include "Tests/PuppyCube.h"
 
+#include "imgui.h"
 #include "Core/Entity/Entity.h"
 #include "Core/Input/Input.h"
 #include "Core/Rendering/Camera.h"
@@ -123,6 +124,22 @@ void PuppyCube::OnRender()
 	Renderer::Begin(m_Camera.get());
 	Renderer::RenderEntity(m_TestEntity.get(), m_StaticShader.get());
 	Renderer::End();
+}
+
+void PuppyCube::OnImGuiRender()
+{
+	ImGui::Begin("Puppy Cube Test");
+
+	ImGui::Text("A/D: Rotate cube");
+	ImGui::Text("Left Shift: Speed up rotation");
+	ImGui::Text("W/S: Move cube along Z axis");
+	ImGui::Text("Q/E: Scale cube");
+	ImGui::Text("Arrow keys: Move camera");
+	ImGui::Separator();
+	if (ImGui::Button("Return to test selection"))
+		DestroySelf();
+
+	ImGui::End();
 }
 
 void PuppyCube::OnUpdate(double deltaSeconds)

@@ -16,8 +16,9 @@ public:
 	Test* Create() override;
 	
 	void OnAttach() override;
-	void OnRender() override;
 	void OnUpdate(double deltaSeconds) override;
+	void OnRender() override;
+	void OnImGuiRender() override;
 	
 private:
 	Ref<StaticShader> m_StaticShader;

@@ -37,6 +37,7 @@ void TestSelectionLayer::OnImGuiRender()
 		if (ImGui::Button(test->GetTestName()))
 		{
 			m_CurrentTest = test->Create();
+			m_CurrentTest->m_TestSelectionLayer = this;
 			m_Window->PushLayer(m_CurrentTest);
 		}
 		ImGui::SameLine();
@@ -69,12 +70,7 @@ void TestSelectionLayer::OnUpdate(double deltaSeconds)
 	if (m_CurrentTest)
 	{
 		if (Input::IsKeyJustDown(MM_KEY_ESCAPE) && Input::IsKeyDown(MM_KEY_LEFT_SHIFT))
-		{
-			Renderer::ResetClearColor();
-			m_Window->PopLayer(m_CurrentTest);
-			delete m_CurrentTest;
-			m_CurrentTest = nullptr;
-		}
+			DestroyCurrentTest();
 
 		if (Input::IsKeyJustDown(MM_KEY_R))
 		{
@@ -92,4 +88,12 @@ void TestSelectionLayer::OnUpdate(double deltaSeconds)
 			m_Window->Close();
 		}
 	}
+}
+
+void TestSelectionLayer::DestroyCurrentTest()
+{
+	Renderer::ResetClearColor();
+	m_Window->PopLayer(m_CurrentTest);
+	delete m_CurrentTest;
+	m_CurrentTest = nullptr;
 }
