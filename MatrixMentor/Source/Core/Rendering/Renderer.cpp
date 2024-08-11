@@ -74,14 +74,14 @@ void Renderer::RenderModel(const RawModel* model)
 void Renderer::RenderTexturedModel(const TexturedModel *model)
 {
 	MM_ASSERT_ERROR(model, "Renderer::RenderTexturedModel called with nullptr TexturedModel!");
-    glBindVertexArray(model->GetModel()->GetVAO());
-    glEnableVertexAttribArray(0);
-    glEnableVertexAttribArray(1);
-    model->GetTexture()->Activate(0);
-    glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(model->GetModel()->GetVertexCount()), GL_UNSIGNED_INT, nullptr);
-    glDisableVertexAttribArray(1);
-    glDisableVertexAttribArray(0);
-    glBindVertexArray(0);
+	glBindVertexArray(model->GetModel()->GetVAO());
+	glEnableVertexAttribArray(0);
+	glEnableVertexAttribArray(1);
+	model->GetTexture()->Activate(0);
+	glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(model->GetModel()->GetVertexCount()), GL_UNSIGNED_INT, nullptr);
+	glDisableVertexAttribArray(1);
+	glDisableVertexAttribArray(0);
+	glBindVertexArray(0);
 }
 
 void Renderer::RenderEntity(const Entity* entity, const StaticShader* shader)

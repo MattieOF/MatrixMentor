@@ -23,8 +23,8 @@ public:
 	static void Shutdown();
 	
 	static void RenderModel(const RawModel* model);
-    static void RenderTexturedModel(const TexturedModel* model);
-    static void RenderEntity(const Entity* entity, const StaticShader* shader);
+	static void RenderTexturedModel(const TexturedModel* model);
+	static void RenderEntity(const Entity* entity, const StaticShader* shader);
 
 	static void BindShader(const ShaderProgram* shader);
 	

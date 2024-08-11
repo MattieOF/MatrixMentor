@@ -9,7 +9,7 @@ class StaticShader;
 class PuppyCube : Test
 {
 public:
-    PuppyCube();
+	PuppyCube();
 
 	[[nodiscard]] const char* GetTestName() const override;
 	[[nodiscard]] const char* GetTestDescription() const override;

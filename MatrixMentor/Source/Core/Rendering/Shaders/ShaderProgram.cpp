@@ -129,9 +129,9 @@ int32_t ShaderProgram::LinkProgram()
 	}
 	m_ShaderStages.clear();
 
-    GetUniformLocations();
+	GetUniformLocations();
 
-    m_IsComplete = true;
+	m_IsComplete = true;
 	
 	return m_ProgramID;
 }
@@ -144,7 +144,7 @@ void ShaderProgram::Bind() const
 
 void ShaderProgram::BindAttributes()
 {
-    // This function can be overridden by child shader programs to bind attributes
+	// This function can be overridden by child shader programs to bind attributes
 }
 
 void ShaderProgram::BindAttribute(int attribute, std::string_view variableName)
@@ -214,17 +214,17 @@ void ShaderProgram::GetUniformLocations()
 
 void ShaderProgram::SetUniform1i(std::string_view uniformName, int value) const
 {
-    glUniform1i(GetUniformLocation(uniformName), value);
+	glUniform1i(GetUniformLocation(uniformName), value);
 }
 
 void ShaderProgram::SetUniform1f(std::string_view uniformName, float value) const
 {
-    glUniform1f(GetUniformLocation(uniformName), value);
+	glUniform1f(GetUniformLocation(uniformName), value);
 }
 
 void ShaderProgram::SetUniform2f(std::string_view uniformName, float x, float y) const
 {
-    glUniform2f(GetUniformLocation(uniformName), x, y);
+	glUniform2f(GetUniformLocation(uniformName), x, y);
 }
 
 void ShaderProgram::SetUniformVec2(std::string_view uniformName, const glm::vec2& vec) const
@@ -234,7 +234,7 @@ void ShaderProgram::SetUniformVec2(std::string_view uniformName, const glm::vec2
 
 void ShaderProgram::SetUniform3f(std::string_view uniformName, float x, float y, float z) const
 {
-    glUniform3f(GetUniformLocation(uniformName), x, y, z);
+	glUniform3f(GetUniformLocation(uniformName), x, y, z);
 }
 
 void ShaderProgram::SetUniformVec3(std::string_view uniformName, const glm::vec3& vec) const
@@ -244,7 +244,7 @@ void ShaderProgram::SetUniformVec3(std::string_view uniformName, const glm::vec3
 
 void ShaderProgram::SetUniform4f(std::string_view uniformName, float x, float y, float z, float w) const
 {
-    glUniform4f(GetUniformLocation(uniformName), x, y, z, w);
+	glUniform4f(GetUniformLocation(uniformName), x, y, z, w);
 }
 
 void ShaderProgram::SetUniformVec4(std::string_view uniformName, const glm::vec4& vec) const
@@ -264,5 +264,5 @@ void ShaderProgram::SetUniformMatrix4f(std::string_view uniformName, const glm::
 
 void ShaderProgram::SetUniform1b(std::string_view uniformName, bool value) const
 {
-    glUniform1i(GetUniformLocation(uniformName), value ? 1 : 0);
+	glUniform1i(GetUniformLocation(uniformName), value ? 1 : 0);
 }

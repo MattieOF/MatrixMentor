@@ -21,22 +21,22 @@ public:
 	void Bind() const;
 	static FORCEINLINE void Unbind() { glUseProgram(0); }
 
-    // Uniform functions
-    int GetUniformLocation(std::string_view uniformName);
-    [[nodiscard]] int GetUniformLocation(std::string_view uniformName) const;
-    virtual void GetUniformLocations();
+	// Uniform functions
+	int GetUniformLocation(std::string_view uniformName);
+	[[nodiscard]] int GetUniformLocation(std::string_view uniformName) const;
+	virtual void GetUniformLocations();
 
-    void SetUniform1b(std::string_view uniformName, bool value) const;
-    void SetUniform1i(std::string_view uniformName, int value) const;
-    void SetUniform1f(std::string_view uniformName, float value) const;
-    void SetUniform2f(std::string_view uniformName, float x, float y) const;
+	void SetUniform1b(std::string_view uniformName, bool value) const;
+	void SetUniform1i(std::string_view uniformName, int value) const;
+	void SetUniform1f(std::string_view uniformName, float value) const;
+	void SetUniform2f(std::string_view uniformName, float x, float y) const;
 	void SetUniformVec2(std::string_view uniformName, const glm::vec2& vec) const;
-    void SetUniform3f(std::string_view uniformName, float x, float y, float z) const;
+	void SetUniform3f(std::string_view uniformName, float x, float y, float z) const;
 	void SetUniformVec3(std::string_view uniformName, const glm::vec3& vec) const;
-    void SetUniform4f(std::string_view uniformName, float x, float y, float z, float w) const;
+	void SetUniform4f(std::string_view uniformName, float x, float y, float z, float w) const;
 	void SetUniformVec4(std::string_view uniformName, const glm::vec4& vec) const;
 	void SetUniformMatrix3f(std::string_view uniformName, const glm::mat3& vec) const;
-    void SetUniformMatrix4f(std::string_view uniformName, const glm::mat4& matrix) const;
+	void SetUniformMatrix4f(std::string_view uniformName, const glm::mat4& matrix) const;
 
 	FORCEINLINE bool IsComplete() const { return m_IsComplete; }
 	FORCEINLINE bool HasError() const { return m_HasError; }

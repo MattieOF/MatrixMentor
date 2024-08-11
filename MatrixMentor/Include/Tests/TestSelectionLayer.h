@@ -5,13 +5,13 @@
 class TestSelectionLayer : public Layer
 {
 public:
-    TestSelectionLayer();
-    ~TestSelectionLayer() override;
-    
-    void OnImGuiRender() override;
-    void OnUpdate(double deltaSeconds) override;
+	TestSelectionLayer();
+	~TestSelectionLayer() override;
+	
+	void OnImGuiRender() override;
+	void OnUpdate(double deltaSeconds) override;
 
 private:
-    Test* m_CurrentTest = nullptr;
-    std::vector<Test*> m_Tests;
+	Test* m_CurrentTest = nullptr;
+	std::vector<Test*> m_Tests;
 };
