@@ -16,14 +16,14 @@ int main()
 	do
 	{
 		// Initialise the window
-		Window* window = nullptr;
+		Window*                   window     = nullptr;
 		const WindowSpecification windowSpec = {
 			"Matrix Mentor",
 			1280, 600,
 			false,
 			true,
 			true,
-			GLSettings {4, 6}
+			GLSettings{4, 6}
 		};
 		if (!Window::Create(windowSpec, window))
 			return -1;
@@ -35,5 +35,6 @@ int main()
 
 		// Clean up
 		delete window;
-	} while (s_ShouldRestart);
+	}
+	while (s_ShouldRestart);
 }

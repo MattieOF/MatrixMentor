@@ -7,24 +7,32 @@ class ShaderProgram
 public:
 	ShaderProgram(std::string_view name);
 	virtual ~ShaderProgram();
-	ShaderProgram(ShaderProgram&& other) noexcept = delete; // Disallow move constructor
-	ShaderProgram(const ShaderProgram& other) = delete; // Disallow copy constructor
-	ShaderProgram& operator=(const ShaderProgram& other) = delete; // Disallow copy assignment
+	ShaderProgram(ShaderProgram&& other) noexcept            = delete; // Disallow move constructor
+	ShaderProgram(const ShaderProgram& other)                = delete; // Disallow copy constructor
+	ShaderProgram& operator=(const ShaderProgram& other)     = delete; // Disallow copy assignment
 	ShaderProgram& operator=(ShaderProgram&& other) noexcept = delete; // Disallow move assignment
 
-	static FORCEINLINE Ref<ShaderProgram> CreateShaderProgram(std::string_view name) { return CreateRef<ShaderProgram>(name); }
+	static FORCEINLINE Ref<ShaderProgram> CreateShaderProgram(std::string_view name)
+	{
+		return CreateRef<ShaderProgram>(name);
+	}
+
 	int32_t AddStageFromSource(GLenum stage, std::string_view source);
 	int32_t AddStageFromFile(GLenum stage, std::string_view source);
 	int32_t LinkProgram();
-	
+
 	// Binding functions
 	void Bind() const;
-	static FORCEINLINE void Unbind() { glUseProgram(0); }
+
+	static FORCEINLINE void Unbind()
+	{
+		glUseProgram(0);
+	}
 
 	// Uniform functions
-	int GetUniformLocation(std::string_view uniformName);
+	int               GetUniformLocation(std::string_view uniformName);
 	[[nodiscard]] int GetUniformLocation(std::string_view uniformName) const;
-	virtual void GetUniformLocations();
+	virtual void      GetUniformLocations();
 
 	void SetUniform1b(std::string_view uniformName, bool value) const;
 	void SetUniform1i(std::string_view uniformName, int value) const;
@@ -42,7 +50,7 @@ public:
 	FORCEINLINE bool HasError() const { return m_HasError; }
 
 	virtual void BindAttributes();
-	void BindAttribute(int attribute, std::string_view variableName);
+	void         BindAttribute(int attribute, std::string_view variableName);
 
 	void CleanUp();
 
@@ -51,14 +59,15 @@ public:
 		return value == GL_VERTEX_SHADER || value == GL_FRAGMENT_SHADER || value == GL_GEOMETRY_SHADER || value ==
 			GL_TESS_EVALUATION_SHADER || value == GL_TESS_CONTROL_SHADER || value == GL_COMPUTE_SHADER;
 	}
+
 	static const char* GetShaderTypeString(GLenum type);
 
 private:
-	std::vector<int32_t> m_ShaderStages;
-	std::vector<int32_t> m_Attributes;
+	std::vector<int32_t>                     m_ShaderStages;
+	std::vector<int32_t>                     m_Attributes;
 	std::unordered_map<std::string, int32_t> m_UniformLocations;
 
-	std::string m_Name = "Untitled Shader";
-	int32_t m_ProgramID = -1;
-	bool m_IsComplete = false, m_HasError = false;
+	std::string m_Name       = "Untitled Shader";
+	int32_t     m_ProgramID  = -1;
+	bool        m_IsComplete = false, m_HasError = false;
 };

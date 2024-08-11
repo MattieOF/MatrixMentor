@@ -4,13 +4,15 @@
 
 #include "glad/gl.h"
 
-RawModel::RawModel(const std::vector<float>& vertices, const std::vector<float>& texCoords, const std::vector<uint32_t>& indices)
+RawModel::RawModel(const std::vector<float>&    vertices, const std::vector<float>& texCoords,
+                   const std::vector<uint32_t>& indices)
 {
-	m_VAO = CreateEmptyVAO();
+	m_VAO         = CreateEmptyVAO();
 	m_VertexCount = static_cast<uint32_t>(indices.size());
 	BindIndiciesBuffer(indices);
 	StoreDataInAttributeList(0, vertices, 3);
-	StoreDataInAttributeList(1, texCoords, 2); // A bit weird to have texCoords here, considering we have a TexturedModel class
+	StoreDataInAttributeList(1, texCoords, 2);
+	// A bit weird to have texCoords here, considering we have a TexturedModel class
 	glBindVertexArray(0);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0); // Unbind IBO after unbinding VAO, or it'll unbind the IBO from the VAO
 }

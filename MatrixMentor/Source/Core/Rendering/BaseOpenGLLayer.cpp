@@ -15,7 +15,10 @@ void BaseOpenGLLayer::OnAttach()
 void BaseOpenGLLayer::OnEvent(Event& event)
 {
 	EventDispatcher dispatcher(event);
-	dispatcher.Dispatch<WindowResizeEvent>([this](const WindowResizeEvent& windowResizeEvent) { return OnResize(windowResizeEvent); });
+	dispatcher.Dispatch<WindowResizeEvent>([this](const WindowResizeEvent& windowResizeEvent)
+	{
+		return OnResize(windowResizeEvent);
+	});
 }
 
 bool BaseOpenGLLayer::OnResize(const WindowResizeEvent& e) const

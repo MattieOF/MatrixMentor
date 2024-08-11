@@ -33,46 +33,46 @@ Test* PuppyCube::Create()
 void PuppyCube::OnAttach()
 {
 	std::vector<float> vertices = {
-		-0.5f,0.5f,-0.5f,	
-		-0.5f,-0.5f,-0.5f,	
-		0.5f,-0.5f,-0.5f,	
-		0.5f,0.5f,-0.5f,		
-			
-		-0.5f,0.5f,0.5f,	
-		-0.5f,-0.5f,0.5f,	
-		0.5f,-0.5f,0.5f,	
-		0.5f,0.5f,0.5f,
-			
-		0.5f,0.5f,-0.5f,	
-		0.5f,-0.5f,-0.5f,	
-		0.5f,-0.5f,0.5f,	
-		0.5f,0.5f,0.5f,
-			
-		-0.5f,0.5f,-0.5f,	
-		-0.5f,-0.5f,-0.5f,	
-		-0.5f,-0.5f,0.5f,	
-		-0.5f,0.5f,0.5f,
-			
-		-0.5f,0.5f,0.5f,
-		-0.5f,0.5f,-0.5f,
-		0.5f,0.5f,-0.5f,
-		0.5f,0.5f,0.5f,
-			
-		-0.5f,-0.5f,0.5f,
-		-0.5f,-0.5f,-0.5f,
-		0.5f,-0.5f,-0.5f,
-		0.5f,-0.5f,0.5f
+		-0.5f, 0.5f, -0.5f,
+		-0.5f, -0.5f, -0.5f,
+		0.5f, -0.5f, -0.5f,
+		0.5f, 0.5f, -0.5f,
+
+		-0.5f, 0.5f, 0.5f,
+		-0.5f, -0.5f, 0.5f,
+		0.5f, -0.5f, 0.5f,
+		0.5f, 0.5f, 0.5f,
+
+		0.5f, 0.5f, -0.5f,
+		0.5f, -0.5f, -0.5f,
+		0.5f, -0.5f, 0.5f,
+		0.5f, 0.5f, 0.5f,
+
+		-0.5f, 0.5f, -0.5f,
+		-0.5f, -0.5f, -0.5f,
+		-0.5f, -0.5f, 0.5f,
+		-0.5f, 0.5f, 0.5f,
+
+		-0.5f, 0.5f, 0.5f,
+		-0.5f, 0.5f, -0.5f,
+		0.5f, 0.5f, -0.5f,
+		0.5f, 0.5f, 0.5f,
+
+		-0.5f, -0.5f, 0.5f,
+		-0.5f, -0.5f, -0.5f,
+		0.5f, -0.5f, -0.5f,
+		0.5f, -0.5f, 0.5f
 	};
 
 	std::vector<float> texCoords = {
 		0, 0,
 		0, 1,
 		1, 1,
-		1, 0,			
+		1, 0,
 		0, 0,
 		0, 1,
 		1, 1,
-		1, 0,			
+		1, 0,
 		0, 0,
 		0, 1,
 		1, 1,
@@ -106,10 +106,10 @@ void PuppyCube::OnAttach()
 		23, 21, 22
 	};
 
-	auto rectangleMesh = CreateRef<RawModel>(vertices, texCoords, indices);
-	auto testTexture = CreateRef<Texture>("Content/Textures/PUPPY.jpg");
-	auto texturedModel = CreateRef<TexturedModel>(rectangleMesh, testTexture);
-	m_TestEntity = CreateRef<Entity>(texturedModel);
+	auto rectangleMesh                    = CreateRef<RawModel>(vertices, texCoords, indices);
+	auto testTexture                      = CreateRef<Texture>("Content/Textures/PUPPY.jpg");
+	auto texturedModel                    = CreateRef<TexturedModel>(rectangleMesh, testTexture);
+	m_TestEntity                          = CreateRef<Entity>(texturedModel);
 	m_TestEntity->GetTransform().Position = glm::vec3(0, 0, -1);
 
 	m_Camera = CreateRef<Camera>();
@@ -158,7 +158,7 @@ void PuppyCube::OnUpdate(double deltaSeconds)
 		m_TestEntity->GetTransform().Position.z += static_cast<float>(deltaSeconds);
 	if (Input::IsKeyDown(MM_KEY_S))
 		m_TestEntity->GetTransform().Position.z -= static_cast<float>(deltaSeconds);
-		
+
 	if (Input::IsKeyDown(MM_KEY_Q))
 		m_TestEntity->GetTransform().Scale -= static_cast<float>(deltaSeconds) / 2;
 	if (Input::IsKeyDown(MM_KEY_E))

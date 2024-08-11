@@ -2,7 +2,6 @@
 
 struct TextureSpecification
 {
-
 };
 
 class Texture
@@ -14,8 +13,8 @@ public:
 	void Activate(int slot = 0) const;
 	void CleanUp();
 
-	[[nodiscard]] FORCEINLINE int32_t  GetWidth()    const { return m_Width; }
-	[[nodiscard]] FORCEINLINE int32_t  GetHeight()   const { return m_Height; }
+	[[nodiscard]] FORCEINLINE int32_t  GetWidth() const { return m_Width; }
+	[[nodiscard]] FORCEINLINE int32_t  GetHeight() const { return m_Height; }
 	[[nodiscard]] FORCEINLINE int32_t  GetChannels() const { return m_Channels; }
 	[[nodiscard]] FORCEINLINE uint32_t GetOpenGLID() const { return m_TextureID; }
 

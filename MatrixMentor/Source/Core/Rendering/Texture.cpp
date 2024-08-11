@@ -40,7 +40,7 @@ Texture::~Texture()
 void Texture::Activate(int slot) const
 {
 	MM_ASSERT_ERROR(m_TextureID != 0, "Texture activated when not initialized");
-	
+
 	glActiveTexture(GL_TEXTURE0 + slot);
 	glBindTexture(GL_TEXTURE_2D, m_TextureID);
 }

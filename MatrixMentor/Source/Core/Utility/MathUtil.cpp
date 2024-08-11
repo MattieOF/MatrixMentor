@@ -2,7 +2,7 @@
 #include "Core/Utility/MathUtil.h"
 
 glm::mat4 MathUtil::CreateTransformationMatrix(const glm::vec3& translation, const glm::vec3& rotation,
-	const glm::vec3& scale)
+                                               const glm::vec3& scale)
 {
 	glm::mat4 mat(1.0f); // Identity matrix
 	mat = translate(mat, translation);

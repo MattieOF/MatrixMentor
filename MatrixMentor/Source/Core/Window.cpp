@@ -19,8 +19,8 @@
 // This should force usage of a dedicated nvidia GPU over an integrated one, if multiple exist within a system.
 // Thanks to http://stevendebock.blogspot.com/2013/07/nvidia-optimus.html and https://stackoverflow.com/a/39047129
 extern "C" {
-	__declspec(dllexport) unsigned long NvOptimusEnablement = 1;
-	__declspec(dllexport) int           AmdPowerXpressRequestHighPerformance = 1;
+__declspec(dllexport) unsigned long NvOptimusEnablement                  = 1;
+__declspec(dllexport) int           AmdPowerXpressRequestHighPerformance = 1;
 }
 #endif
 
@@ -41,7 +41,8 @@ static std::pair<int, int> GetGLADVersion(int version)
 	return output;
 }
 
-void GLErrorCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message, const void* userParam)
+void GLErrorCallback(GLenum      source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message,
+                     const void* userParam)
 {
 #ifndef MM_SHOW_GL_NOTIFICATIONS
 	if (severity == GL_DEBUG_SEVERITY_NOTIFICATION)
@@ -49,7 +50,7 @@ void GLErrorCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLs
 #endif
 
 #ifndef MM_NO_IGNORED_GL_ERROR_IDS
-	static std::vector<GLuint> ignoredIDs = { 131185 };
+	static std::vector<GLuint> ignoredIDs = {131185};
 
 	if (std::find(ignoredIDs.begin(), ignoredIDs.end(), id) != ignoredIDs.end())
 		return;
@@ -59,7 +60,8 @@ void GLErrorCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLs
 	const char* typeText;
 	const char* severityText;
 
-	switch (source) {
+	switch (source)
+	{
 	case GL_DEBUG_SOURCE_API:
 		sourceText = "API";
 		break;
@@ -89,7 +91,8 @@ void GLErrorCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLs
 		break;
 	}
 
-	switch (type) {
+	switch (type)
+	{
 	case GL_DEBUG_TYPE_ERROR:
 		typeText = "Error";
 		break;
@@ -123,7 +126,8 @@ void GLErrorCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLs
 		break;
 	}
 
-	switch (severity) {
+	switch (severity)
+	{
 	case GL_DEBUG_SEVERITY_HIGH:
 		severityText = "High";
 		break;
@@ -145,7 +149,8 @@ void GLErrorCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLs
 		break;
 	}
 
-	MM_ERROR("OpenGL Error ({0} severity, id: {4}): from {1}, {2}: {3}", severityText, sourceText, typeText, message, id);
+	MM_ERROR("OpenGL Error ({0} severity, id: {4}): from {1}, {2}: {3}", severityText, sourceText, typeText, message,
+	         id);
 	MM_ASSERT_ERROR(severity == GL_DEBUG_SEVERITY_NOTIFICATION);
 }
 
@@ -185,14 +190,14 @@ bool Window::Create(const WindowSpecification& spec, Window*& outWindow)
 
 	if (spec.Centered)
 	{
-		int count;
-		int monitorX, monitorY;
-		GLFWmonitor** monitors = glfwGetMonitors(&count);
+		int                count;
+		int                monitorX, monitorY;
+		GLFWmonitor**      monitors  = glfwGetMonitors(&count);
 		const GLFWvidmode* videoMode = glfwGetVideoMode(monitors[0]);
 		glfwGetMonitorPos(monitors[0], &monitorX, &monitorY);
 		glfwSetWindowPos(window,
-			monitorX + (videoMode->width - spec.Width) / 2,
-			monitorY + (videoMode->height - spec.Height) / 2);
+		                 monitorX + (videoMode->width - spec.Width) / 2,
+		                 monitorY + (videoMode->height - spec.Height) / 2);
 	}
 
 	glfwShowWindow(window);
@@ -205,22 +210,21 @@ bool Window::Create(const WindowSpecification& spec, Window*& outWindow)
 
 	// Initialise OpenGL
 	const int version = gladLoadGL(glfwGetProcAddress);
-	if (version == 0) {
-		
+	if (version == 0)
+	{
 		MM_ERROR("Failed to load OpenGL!");
 		glfwTerminate();
 		return false;
-	} else
-	{
-		auto decodedVersion = GetGLADVersion(version);
-		MM_INFO("Successfully loaded OpenGL {0}.{1}{2} via GLAD!", decodedVersion.first, decodedVersion.second, spec.GLSettings.Core ? " (Core)" : "");
 	}
-	
+	auto decodedVersion = GetGLADVersion(version);
+	MM_INFO("Successfully loaded OpenGL {0}.{1}{2} via GLAD!", decodedVersion.first, decodedVersion.second,
+	        spec.GLSettings.Core ? " (Core)" : "");
+
 	// Basic GL Setup
 	glViewport(0, 0, spec.Width, spec.Height);
-	const char* glVersion = reinterpret_cast<const char*>(glGetString(GL_VERSION));
-	const char* renderer = reinterpret_cast<const char*>(glGetString(GL_RENDERER));
-	const char* vendor = reinterpret_cast<const char*>(glGetString(GL_VENDOR));
+	auto glVersion = reinterpret_cast<const char*>(glGetString(GL_VERSION));
+	auto renderer  = reinterpret_cast<const char*>(glGetString(GL_RENDERER));
+	auto vendor    = reinterpret_cast<const char*>(glGetString(GL_VENDOR));
 	MM_INFO("	Version: {0}", glVersion);
 	MM_INFO("	GPU:     {0}", renderer);
 	MM_INFO("	Vendor:  {0}", vendor);
@@ -232,16 +236,16 @@ bool Window::Create(const WindowSpecification& spec, Window*& outWindow)
 #endif
 
 	InitImGui();
-	
+
 	// Setup Platform/Renderer backends
 	ImGui_ImplGlfw_InitForOpenGL(window, true);
 	ImGui_ImplOpenGL3_Init("#version 410 core");
-	
+
 	// Init input
 	delete Input::s_Instance;
-	Input::s_Instance = new GlfwInput();
+	Input::s_Instance                                       = new GlfwInput();
 	reinterpret_cast<GlfwInput*>(Input::s_Instance)->Window = window;
-	
+
 	// Setup GLFW event callbacks
 	glfwSetWindowSizeCallback(window, [](GLFWwindow* window, int width, int height)
 	{
@@ -249,7 +253,7 @@ bool Window::Create(const WindowSpecification& spec, Window*& outWindow)
 		WindowData& data = *static_cast<WindowData*>(glfwGetWindowUserPointer(window));
 
 		// Update data structs width and height values
-		data.Width = width;
+		data.Width  = width;
 		data.Height = height;
 
 		// Create a resize event and dispatch it
@@ -260,7 +264,7 @@ bool Window::Create(const WindowSpecification& spec, Window*& outWindow)
 	glfwSetWindowCloseCallback(window, [](GLFWwindow* window)
 	{
 		const WindowData& data = *static_cast<WindowData*>(glfwGetWindowUserPointer(window));
-		WindowCloseEvent e;
+		WindowCloseEvent  e;
 		data.EventCallback(e);
 	});
 
@@ -269,29 +273,29 @@ bool Window::Create(const WindowSpecification& spec, Window*& outWindow)
 		ImGui_ImplGlfw_KeyCallback(window, key, scancode, action, mods);
 		if (ImGui::GetIO().WantCaptureKeyboard)
 			return;
-		
+
 		const WindowData& data = *static_cast<WindowData*>(glfwGetWindowUserPointer(window));
 		switch (action)
 		{
-			case GLFW_PRESS:
+		case GLFW_PRESS:
 			{
 				KeyPressedEvent e(key, false);
 				data.EventCallback(e);
 				break;
 			}
-			case GLFW_RELEASE:
+		case GLFW_RELEASE:
 			{
 				KeyReleasedEvent e(key);
 				data.EventCallback(e);
 				break;
 			}
-			case GLFW_REPEAT:
+		case GLFW_REPEAT:
 			{
 				KeyPressedEvent e(key, true);
 				data.EventCallback(e);
 				break;
 			}
-			default: break;
+		default: break;
 		}
 	});
 
@@ -300,9 +304,9 @@ bool Window::Create(const WindowSpecification& spec, Window*& outWindow)
 		ImGui_ImplGlfw_CharCallback(window, codepoint);
 		if (ImGui::GetIO().WantCaptureKeyboard)
 			return;
-		
+
 		const WindowData& data = *static_cast<WindowData*>(glfwGetWindowUserPointer(window));
-		KeyTypedEvent e(codepoint);
+		KeyTypedEvent     e(codepoint);
 		data.EventCallback(e);
 	});
 
@@ -311,24 +315,24 @@ bool Window::Create(const WindowSpecification& spec, Window*& outWindow)
 		ImGui_ImplGlfw_MouseButtonCallback(window, button, action, mods);
 		if (ImGui::GetIO().WantCaptureMouse)
 			return;
-		
+
 		const WindowData& data = *static_cast<WindowData*>(glfwGetWindowUserPointer(window));
 
 		switch (action)
 		{
-			case GLFW_PRESS:
+		case GLFW_PRESS:
 			{
 				MouseButtonPressedEvent e(button);
 				data.EventCallback(e);
 				break;
 			}
-			case GLFW_RELEASE:
+		case GLFW_RELEASE:
 			{
 				MouseButtonReleasedEvent e(button);
 				data.EventCallback(e);
 				break;
 			}
-			default: break;
+		default: break;
 		}
 	});
 
@@ -337,8 +341,8 @@ bool Window::Create(const WindowSpecification& spec, Window*& outWindow)
 		ImGui_ImplGlfw_ScrollCallback(window, xoffset, yoffset);
 		if (ImGui::GetIO().WantCaptureMouse)
 			return;
-		
-		const WindowData& data = *static_cast<WindowData*>(glfwGetWindowUserPointer(window));
+
+		const WindowData&  data = *static_cast<WindowData*>(glfwGetWindowUserPointer(window));
 		MouseScrolledEvent e(xoffset, yoffset);
 		data.EventCallback(e);
 	});
@@ -348,9 +352,9 @@ bool Window::Create(const WindowSpecification& spec, Window*& outWindow)
 		ImGui::GetIO().AddMousePosEvent(static_cast<float>(xpos), static_cast<float>(ypos));
 		if (ImGui::GetIO().WantCaptureMouse)
 			return;
-		
+
 		const WindowData& data = *static_cast<WindowData*>(glfwGetWindowUserPointer(window));
-		MouseMovedEvent e(static_cast<float>(xpos), static_cast<float>(ypos));
+		MouseMovedEvent   e(static_cast<float>(xpos), static_cast<float>(ypos));
 		data.EventCallback(e);
 	});
 
@@ -366,9 +370,9 @@ void Window::Run()
 	while (!glfwWindowShouldClose(m_Window))
 	{
 		const double frametime = glfwGetTime();
-		m_UnscaledDeltaTime = frametime - lastFrametime;
-		m_UnscaledDeltaTime = std::max(0.0, m_UnscaledDeltaTime);
-		lastFrametime = frametime;
+		m_UnscaledDeltaTime    = frametime - lastFrametime;
+		m_UnscaledDeltaTime    = std::max(0.0, m_UnscaledDeltaTime);
+		lastFrametime          = frametime;
 
 		printFPSTimer -= static_cast<float>(GetDeltaTime());
 		if (printFPSTimer <= 0)
@@ -396,7 +400,7 @@ void Window::Run()
 		for (Layer* layer : m_Layers)
 			layer->OnImGuiRender();
 		ImGui::PopFont();
-		
+
 		ImGui::Render();
 		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
@@ -408,10 +412,11 @@ void Window::Run()
 			ImGui::RenderPlatformWindowsDefault();
 			glfwMakeContextCurrent(backup_current_context);
 		}
-		ImGui::GetIO().DisplaySize = ImVec2(static_cast<float>(m_WindowData.Width), static_cast<float>(m_WindowData.Height));
+		ImGui::GetIO().DisplaySize = ImVec2(static_cast<float>(m_WindowData.Width),
+		                                    static_cast<float>(m_WindowData.Height));
 
 		Input::UpdateInput();
-		
+
 		glfwSwapBuffers(m_Window);
 	}
 }
@@ -430,7 +435,7 @@ void Window::OnEvent(Event& e)
 		Input::m_KeysDownNow[keyReleasedEvent.GetKeyCode()] = false;
 		return false;
 	});
-	
+
 	// Propagate the event to all layers, starting with the topmost layer/overlay, down to the base layer. 
 	for (auto it = m_Layers.end(); it != m_Layers.begin();)
 	{
@@ -520,10 +525,10 @@ bool Window::ShouldClose() const
 Window::Window(const WindowSpecification& spec, GLFWwindow* window)
 	: m_Window(window)
 {
-	m_WindowData.Title = spec.Title;
-	m_WindowData.Width = spec.Width;
-	m_WindowData.Height = spec.Height;
-	m_WindowData.VSync = spec.VSync;
+	m_WindowData.Title         = spec.Title;
+	m_WindowData.Width         = spec.Width;
+	m_WindowData.Height        = spec.Height;
+	m_WindowData.VSync         = spec.VSync;
 	m_WindowData.EventCallback = BIND_EVENT_FN(Window::OnEvent);
 	glfwSetWindowUserPointer(m_Window, &m_WindowData);
 }
@@ -534,16 +539,16 @@ void Window::InitImGui()
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
 	auto io = ImGui::GetIO();
-	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
-	io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
-	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;         // Enable Docking
-	io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;       // Enable Multi-Viewport / Platform Windows
+	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard; // Enable Keyboard Controls
+	io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;  // Enable Gamepad Controls
+	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;     // Enable Docking
+	io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;   // Enable Multi-Viewport / Platform Windows
 	ImGui::StyleColorsDark();
 
 	ImGuiStyle& style = ImGui::GetStyle();
 	if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
 	{
-		style.WindowRounding = 0.0f;
+		style.WindowRounding              = 0.0f;
 		style.Colors[ImGuiCol_WindowBg].w = 1.0f;
 	}
 

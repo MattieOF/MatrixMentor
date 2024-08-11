@@ -24,16 +24,17 @@ int32_t ShaderProgram::AddStageFromSource(GLenum stage, std::string_view source)
 	if (!IsValidShaderStage(stage))
 	{
 		MM_ERROR("ShaderProgram::AddStage of shader \"{0}\" called with invalid stage enum: {1}.\nShould be one of: "
-			"GL_VERTEX_SHADER, GL_FRAGMENT_SHADER, GL_TESS_EVALUATION_SHADER, GL_TESS_CONTROL_SHADER, GL_COMPUTE_SHADER", m_Name, stage);
+		         "GL_VERTEX_SHADER, GL_FRAGMENT_SHADER, GL_TESS_EVALUATION_SHADER, GL_TESS_CONTROL_SHADER, GL_COMPUTE_SHADER",
+		         m_Name, stage);
 		return -1;
 	}
 
 	for (int32_t attrib : m_Attributes)
 		glEnableVertexAttribArray(attrib);
 
-	int32_t shaderID = glCreateShader(stage);
-	const auto length = static_cast<int32_t>(source.length());
-	const char* data = source.data();
+	int32_t     shaderID = glCreateShader(stage);
+	const auto  length   = static_cast<int32_t>(source.length());
+	const char* data     = source.data();
 	glShaderSource(shaderID, 1, &data, &length);
 	glCompileShader(shaderID);
 
@@ -41,10 +42,11 @@ int32_t ShaderProgram::AddStageFromSource(GLenum stage, std::string_view source)
 	glGetShaderiv(shaderID, GL_COMPILE_STATUS, &compiled);
 	if (compiled != GL_TRUE)
 	{
-		GLsizei logLength = 0;
+		GLsizei       logLength = 0;
 		static GLchar message[1024];
 		glGetShaderInfoLog(shaderID, 1024, &logLength, message);
-		MM_ERROR_NO_NEWLINE("In shader {0}, failed to compile {1}: {2}", m_Name, GetShaderTypeString(stage), std::string_view(&message[0], logLength));
+		MM_ERROR_NO_NEWLINE("In shader {0}, failed to compile {1}: {2}", m_Name, GetShaderTypeString(stage),
+		                    std::string_view(&message[0], logLength));
 		glDeleteShader(shaderID);
 		return -1;
 	}
@@ -93,7 +95,7 @@ int32_t ShaderProgram::LinkProgram()
 		glAttachShader(m_ProgramID, shaderID);
 	glLinkProgram(m_ProgramID);
 	glValidateProgram(m_ProgramID);
-	
+
 	// Check we linked successfully
 	int32_t success = 0;
 	glGetProgramiv(m_ProgramID, GL_LINK_STATUS, &success);
@@ -132,7 +134,7 @@ int32_t ShaderProgram::LinkProgram()
 	GetUniformLocations();
 
 	m_IsComplete = true;
-	
+
 	return m_ProgramID;
 }
 
@@ -177,7 +179,7 @@ const char* ShaderProgram::GetShaderTypeString(GLenum type)
 		return "Compute Shader";
 	default:
 		return "Unknown Shader Type"; // Dynamic string doesn't work here, either pointer to freed or memory leak.
-		// return fmt::format("Unknown Shader Type ({0})", type).c_str();
+	// return fmt::format("Unknown Shader Type ({0})", type).c_str();
 	}
 }
 
@@ -191,7 +193,7 @@ int ShaderProgram::GetUniformLocation(std::string_view uniformName)
 			MM_WARN("Uniform \"{0}\" not found in shader \"{1}\"", uniformName, m_Name);
 		m_UniformLocations[std::string(uniformName)] = location;
 		return location;
-	} 
+	}
 	return pos->second;
 }
 
@@ -204,7 +206,7 @@ int ShaderProgram::GetUniformLocation(std::string_view uniformName) const
 		if (location == -1)
 			MM_WARN("Uniform \"{0}\" not found in shader \"{1}\"", uniformName, m_Name);
 		return location;
-	} 
+	}
 	return pos->second;
 }
 

@@ -21,12 +21,12 @@ enum class EventType
 
 enum EventCategory
 {
-	None            = 0,
-	EC_Application  = BIT(0),
-	EC_Input        = BIT(1),
-	EC_Keyboard     = BIT(2),
-	EC_Mouse        = BIT(3),
-	EC_MouseButton  = BIT(4)
+	None           = 0,
+	EC_Application = BIT(0),
+	EC_Input       = BIT(1),
+	EC_Keyboard    = BIT(2),
+	EC_Mouse       = BIT(3),
+	EC_MouseButton = BIT(4)
 };
 
 class Event
@@ -34,12 +34,12 @@ class Event
 	friend class EventDispatcher;
 
 public:
-	[[nodiscard]] virtual EventType GetEventType() const = 0;
+	[[nodiscard]] virtual EventType   GetEventType() const = 0;
 	[[nodiscard]] virtual const char* GetName() const = 0;
-	[[nodiscard]] virtual int GetCategoryFlags() const = 0;
+	[[nodiscard]] virtual int         GetCategoryFlags() const = 0;
 	[[nodiscard]] virtual std::string ToString() const { return GetName(); }
 
-	[[nodiscard]] inline bool IsInCategory(const EventCategory category) const
+	[[nodiscard]] bool IsInCategory(const EventCategory category) const
 	{
 		return GetCategoryFlags() & category;
 	}
@@ -49,15 +49,16 @@ public:
 
 class EventDispatcher
 {
-	template<typename T>
+	template <typename T>
 	using EventFn = std::function<bool(T&)>;
+
 public:
 	EventDispatcher(Event& event)
 		: m_Event(event)
 	{
 	}
 
-	template<typename T>
+	template <typename T>
 	bool Dispatch(const EventFn<T>& func)
 	{
 		if (m_Event.GetEventType() == T::GetStaticType())
@@ -68,6 +69,7 @@ public:
 
 		return false;
 	}
+
 private:
 	Event& m_Event;
 };

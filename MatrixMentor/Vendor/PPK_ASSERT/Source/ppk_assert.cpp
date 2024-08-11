@@ -53,12 +53,12 @@
 #define PPK_ASSERT_ABORT abort
 #endif
 
-namespace {
+namespace
+{
+	namespace AssertLevel = ppk::assert::implementation::AssertLevel;
+	namespace AssertAction = ppk::assert::implementation::AssertAction;
 
-  namespace AssertLevel = ppk::assert::implementation::AssertLevel;
-  namespace AssertAction = ppk::assert::implementation::AssertAction;
-
-  typedef int (*printHandler)(FILE* out, int, const char* format, ...);
+	using printHandler = int(*)(FILE* out, int, const char* format, ...);
 
 #if defined(PPK_ASSERT_LOG_FILE) && defined(PPK_ASSERT_LOG_FILE_TRUNCATE)
   struct LogFileTruncate
@@ -73,15 +73,15 @@ namespace {
   static LogFileTruncate truncate;
 #endif
 
-  int print(FILE* out, int level, const char* format, ...)
-  {
-    va_list args;
-    int count;
+	int print(FILE* out, int level, const char* format, ...)
+	{
+		va_list args;
+		int     count;
 
-    va_start(args, format);
-    count = vfprintf(out, format, args);
-    fflush(out);
-    va_end(args);
+		va_start(args, format);
+		count = vfprintf(out, format, args);
+		fflush(out);
+		va_end(args);
 
 #if defined(PPK_ASSERT_LOG_FILE)
     struct Local
@@ -102,11 +102,11 @@ namespace {
 #endif
 
 #if defined(_WIN32)
-    char buffer[PPK_ASSERT_MESSAGE_BUFFER_SIZE];
-    va_start(args, format);
-    vsnprintf(buffer, PPK_ASSERT_MESSAGE_BUFFER_SIZE, format, args);
-    ::OutputDebugStringA(buffer);
-    va_end(args);
+		char buffer[PPK_ASSERT_MESSAGE_BUFFER_SIZE];
+		va_start(args, format);
+		vsnprintf(buffer, PPK_ASSERT_MESSAGE_BUFFER_SIZE, format, args);
+		OutputDebugStringA(buffer);
+		va_end(args);
 #endif
 
 #if defined(__ANDROID__) || defined(ANDROID)
@@ -125,377 +125,375 @@ namespace {
     __android_log_vprint(priority, PPK_ASSERT_LOG_TAG, format, args);
     va_start(args, format);
 #else
-    PPK_ASSERT_UNUSED(level);
+		PPK_ASSERT_UNUSED(level);
 #endif
 
-    return count;
-  }
+		return count;
+	}
 
-  int formatLevel(int level, const char* expression, FILE* out, printHandler print)
-  {
-    const char* levelstr = 0;
+	int formatLevel(int level, const char* expression, FILE* out, printHandler print)
+	{
+		const char* levelstr = nullptr;
 
-    switch (level)
-    {
-      case AssertLevel::Debug:
-        levelstr = "DEBUG";
-        break;
-      case AssertLevel::Warning:
-        levelstr = "WARNING";
-        break;
-      case AssertLevel::Error:
-        levelstr = "ERROR";
-        break;
-      case AssertLevel::Fatal:
-        levelstr = "FATAL";
-        break;
+		switch (level)
+		{
+		case AssertLevel::Debug:
+			levelstr = "DEBUG";
+			break;
+		case AssertLevel::Warning:
+			levelstr = "WARNING";
+			break;
+		case AssertLevel::Error:
+			levelstr = "ERROR";
+			break;
+		case AssertLevel::Fatal:
+			levelstr = "FATAL";
+			break;
 
-      default:
-        break;
-    }
+		default:
+			break;
+		}
 
-    if (levelstr)
-      return print(out, level, "Assertion '%s' failed (%s)\n", expression, levelstr);
-    else
-      return print(out, level, "Assertion '%s' failed (level = %d)\n", expression, level);
-  }
+		if (levelstr)
+			return print(out, level, "Assertion '%s' failed (%s)\n", expression, levelstr);
+		return print(out, level, "Assertion '%s' failed (level = %d)\n", expression, level);
+	}
 
-  AssertAction::AssertAction PPK_ASSERT_CALL _defaultHandler( const char* file,
-                                                              int line,
-                                                              const char* function,
-                                                              const char* expression,
-                                                              int level,
-                                                              const char* message)
-  {
+	AssertAction::AssertAction PPK_ASSERT_CALL _defaultHandler(const char* file,
+	                                                           int         line,
+	                                                           const char* function,
+	                                                           const char* expression,
+	                                                           int         level,
+	                                                           const char* message)
+	{
 #if defined(_WIN32)
-    if (::GetConsoleWindow() == NULL)
-    {
-      if (::AllocConsole())
-      {
-        (void)freopen("CONIN$", "r", stdin);
-        (void)freopen("CONOUT$", "w", stdout);
-        (void)freopen("CONOUT$", "w", stderr);
+		if (GetConsoleWindow() == nullptr)
+		{
+			if (AllocConsole())
+			{
+				(void)freopen("CONIN$", "r", stdin);
+				(void)freopen("CONOUT$", "w", stdout);
+				(void)freopen("CONOUT$", "w", stderr);
 
-        SetFocus(::GetConsoleWindow());
-      }
-    }
+				SetFocus(GetConsoleWindow());
+			}
+		}
 #endif
 
-    formatLevel(level, expression, stderr, reinterpret_cast<printHandler>(print));
-    print(stderr, level, "  in file %s, line %d\n  function: %s\n", file, line, function);
+		formatLevel(level, expression, stderr, print);
+		print(stderr, level, "  in file %s, line %d\n  function: %s\n", file, line, function);
 
-    if (message)
-      print(stderr, level, "  with message: %s\n\n", message);
+		if (message)
+			print(stderr, level, "  with message: %s\n\n", message);
 
-    if (level < AssertLevel::Debug)
-    {
-      return AssertAction::None;
-    }
-    else if (AssertLevel::Debug <= level && level < AssertLevel::Error)
-    {
+		if (level < AssertLevel::Debug)
+		{
+			return AssertAction::None;
+		}
+		if (AssertLevel::Debug <= level && level < AssertLevel::Error)
+		{
 #if (!TARGET_OS_IPHONE && !TARGET_IPHONE_SIMULATOR) && (!defined(__ANDROID__) && !defined(ANDROID)) || defined(PPK_ASSERT_DEFAULT_HANDLER_STDIN)
-      for (;;)
-      {
+			for (;;)
+			{
 #if defined(PPK_ASSERT_DISABLE_IGNORE_LINE)
         fprintf(stderr, "Press (I)gnore / Ignore (A)ll / (D)ebug / A(b)ort: ");
 #else
-        fprintf(stderr, "Press (I)gnore / Ignore (F)orever / Ignore (A)ll / (D)ebug / A(b)ort: ");
+				fprintf(stderr, "Press (I)gnore / Ignore (F)orever / Ignore (A)ll / (D)ebug / A(b)ort: ");
 #endif
-        fflush(stderr);
+				fflush(stderr);
 
-        char buffer[256];
-        if (!fgets(buffer, sizeof(buffer), stdin))
-        {
-          clearerr(stdin);
-          fprintf(stderr, "\n");
-          fflush(stderr);
-          continue;
-        }
+				char buffer[256];
+				if (!fgets(buffer, sizeof(buffer), stdin))
+				{
+					clearerr(stdin);
+					fprintf(stderr, "\n");
+					fflush(stderr);
+					continue;
+				}
 
-        // we eventually skip the leading spaces but that's it
-        char input[2] = {'b', 0};
-        if (sscanf(buffer, " %1[a-zA-Z] ", input) != 1)
-          continue;
+				// we eventually skip the leading spaces but that's it
+				char input[2] = {'b', 0};
+				if (sscanf(buffer, " %1[a-zA-Z] ", input) != 1)
+					continue;
 
-        switch (*input)
-        {
-          case 'b':
-          case 'B':
-            return AssertAction::Abort;
+				switch (*input)
+				{
+				case 'b':
+				case 'B':
+					return AssertAction::Abort;
 
-          case 'd':
-          case 'D':
-            return AssertAction::Break;
+				case 'd':
+				case 'D':
+					return AssertAction::Break;
 
-          case 'i':
-          case 'I':
-            return AssertAction::Ignore;
+				case 'i':
+				case 'I':
+					return AssertAction::Ignore;
 
 #  if !defined(PPK_ASSERT_DISABLE_IGNORE_LINE)
-          case 'f':
-          case 'F':
-            return AssertAction::IgnoreLine;
+				case 'f':
+				case 'F':
+					return AssertAction::IgnoreLine;
 #  endif
 
-          case 'a':
-          case 'A':
-            return AssertAction::IgnoreAll;
+				case 'a':
+				case 'A':
+					return AssertAction::IgnoreAll;
 
-          default:
-            break;
-        }
-      }
+				default:
+					break;
+				}
+			}
 #else
       return AssertAction::Break;
 #endif
-    }
-    else if (AssertLevel::Error <= level && level < AssertLevel::Fatal)
-    {
-      return AssertAction::Throw;
-    }
+		}
+		if (AssertLevel::Error <= level && level < AssertLevel::Fatal)
+		{
+			return AssertAction::Throw;
+		}
 
-    return AssertAction::Abort;
-  }
+		return AssertAction::Abort;
+	}
 
-  void _throw(const char* file,
-              int line,
-              const char* function,
-              const char* expression,
-              const char* message)
-  {
-    using ppk::assert::implementation::throwException;
-    throwException(ppk::assert::AssertionException(file, line, function, expression, message));
-  }
+	void _throw(const char* file,
+	            int         line,
+	            const char* function,
+	            const char* expression,
+	            const char* message)
+	{
+		using ppk::assert::implementation::throwException;
+		throwException(ppk::assert::AssertionException(file, line, function, expression, message));
+	}
 }
 
-namespace ppk {
-namespace assert {
+namespace ppk
+{
+	namespace assert
+	{
+		AssertionException::AssertionException(const char* file,
+		                                       int         line,
+		                                       const char* function,
+		                                       const char* expression,
+		                                       const char* message)
+			: _file(file), _line(line), _function(function), _expression(expression), _heap(PPK_ASSERT_NULLPTR)
+		{
+			if (!message)
+			{
+				memset(_stack, 0, sizeof(char) * size);
+				return;
+			}
 
-  AssertionException::AssertionException(const char* file,
-                                         int line,
-                                         const char* function,
-                                         const char* expression,
-                                         const char* message)
-  : _file(file), _line(line), _function(function), _expression(expression), _heap(PPK_ASSERT_NULLPTR)
-  {
-    if (!message)
-    {
-      memset(_stack, 0, sizeof(char) * size);
-      return;
-    }
+			size_t length = strlen(message);
 
-    size_t length = strlen(message);
+			if (length < size) // message is short enough for the stack buffer
+			{
+				memcpy(_stack, message, sizeof(char) * length);
+				memset(_stack + length, 0, sizeof(char) * (size - length)); // pad with 0
+			}
+			else // allocate storage on the heap
+			{
+				_heap = static_cast<char*>(PPK_ASSERT_MALLOC(sizeof(char) * (length + 1)));
 
-    if (length < size) // message is short enough for the stack buffer
-    {
-      memcpy(_stack, message, sizeof(char) * length);
-      memset(_stack + length, 0, sizeof(char) * (size - length)); // pad with 0
-    }
-    else // allocate storage on the heap
-    {
-      _heap = static_cast<char*>(PPK_ASSERT_MALLOC(sizeof(char) * (length + 1)));
+				if (!_heap) // allocation failed
+				{
+					memcpy(_stack, message, sizeof(char) * (size - 1)); // stack fallback, truncate :/
+					_stack[size - 1] = 0;
+				}
+				else
+				{
+					memcpy(_heap, message, sizeof(char) * length); // copy the message
+					_heap[length]    = 0;
+					_stack[size - 1] = 1; // mark the stack
+				}
+			}
+		}
 
-      if (!_heap) // allocation failed
-      {
-        memcpy(_stack, message, sizeof(char) * (size - 1)); // stack fallback, truncate :/
-        _stack[size - 1] = 0;
-      }
-      else
-      {
-        memcpy(_heap, message, sizeof(char) * length); // copy the message
-        _heap[length] = 0;
-        _stack[size - 1] = 1; // mark the stack
-      }
-    }
-  }
+		AssertionException::AssertionException(const AssertionException& rhs)
+			: _file(rhs._file), _line(rhs._line), _function(rhs._function), _expression(rhs._expression)
+		{
+			const char* message = rhs.what();
+			size_t      length  = strlen(message);
 
-  AssertionException::AssertionException(const AssertionException& rhs)
-  : _file(rhs._file), _line(rhs._line), _function(rhs._function), _expression(rhs._expression)
-  {
-    const char* message = rhs.what();
-    size_t length = strlen(message);
+			if (length < size) // message is short enough for the stack buffer
+			{
+				memcpy(_stack, message, sizeof(char) * size); // pad with 0
+			}
+			else // allocate storage on the heap
+			{
+				_heap = static_cast<char*>(PPK_ASSERT_MALLOC(sizeof(char) * (length + 1)));
 
-    if (length < size) // message is short enough for the stack buffer
-    {
-      memcpy(_stack, message, sizeof(char) * size); // pad with 0
-    }
-    else // allocate storage on the heap
-    {
-      _heap = static_cast<char*>(PPK_ASSERT_MALLOC(sizeof(char) * (length + 1)));
+				if (!_heap) // allocation failed
+				{
+					memcpy(_stack, message, sizeof(char) * (size - 1)); // stack fallback, truncate :/
+					_stack[size - 1] = 0;
+				}
+				else
+				{
+					memcpy(_heap, message, sizeof(char) * length); // copy the message
+					_heap[length]    = 0;
+					_stack[size - 1] = 1; // mark the stack
+				}
+			}
+		}
 
-      if (!_heap) // allocation failed
-      {
-        memcpy(_stack, message, sizeof(char) * (size - 1)); // stack fallback, truncate :/
-        _stack[size - 1] = 0;
-      }
-      else
-      {
-        memcpy(_heap, message, sizeof(char) * length); // copy the message
-        _heap[length] = 0;
-        _stack[size - 1] = 1; // mark the stack
-      }
-    }
-  }
+		AssertionException::~AssertionException() PPK_ASSERT_EXCEPTION_NO_THROW
+		{
+			if (_stack[size - 1])
+				PPK_ASSERT_FREE(_heap);
 
-  AssertionException::~AssertionException() PPK_ASSERT_EXCEPTION_NO_THROW
-  {
-    if (_stack[size - 1])
-      PPK_ASSERT_FREE(_heap);
+			_heap            = PPK_ASSERT_NULLPTR; // in case the exception object is destroyed twice
+			_stack[size - 1] = 0;
+		}
 
-    _heap = PPK_ASSERT_NULLPTR; // in case the exception object is destroyed twice
-    _stack[size - 1] = 0;
-  }
+		AssertionException& AssertionException::operator =(const AssertionException& rhs)
+		{
+			if (&rhs == this)
+				return *this;
 
-  AssertionException& AssertionException::operator = (const AssertionException& rhs)
-  {
-    if (&rhs == this)
-      return *this;
+			const char* message = rhs.what();
+			size_t      length  = strlen(message);
 
-    const char* message = rhs.what();
-    size_t length = strlen(message);
+			if (length < size) // message is short enough for the stack buffer
+			{
+				if (_stack[size - 1])
+					PPK_ASSERT_FREE(_heap);
 
-    if (length < size) // message is short enough for the stack buffer
-    {
-      if (_stack[size - 1])
-        PPK_ASSERT_FREE(_heap);
+				memcpy(_stack, message, sizeof(char) * size);
+			}
+			else // allocate storage on the heap
+			{
+				if (_stack[size - 1])
+				{
+					size_t _length = strlen(_heap);
 
-      memcpy(_stack, message, sizeof(char) * size);
-    }
-    else // allocate storage on the heap
-    {
-      if (_stack[size - 1])
-      {
-        size_t _length = strlen(_heap);
+					if (length <= _length)
+					{
+						memcpy(_heap, message, sizeof(char) * _length); // copy the message, pad with 0
+						return *this;
+					}
+					PPK_ASSERT_FREE(_heap);
+				}
 
-        if (length <= _length)
-        {
-          memcpy(_heap, message, sizeof(char) * _length); // copy the message, pad with 0
-          return *this;
-        }
-        else
-        {
-          PPK_ASSERT_FREE(_heap);
-        }
-      }
+				_heap = static_cast<char*>(PPK_ASSERT_MALLOC(sizeof(char) * (length + 1)));
 
-      _heap = static_cast<char*>(PPK_ASSERT_MALLOC(sizeof(char) * (length + 1)));
+				if (!_heap) // allocation failed
+				{
+					memcpy(_stack, message, sizeof(char) * (size - 1)); // stack fallback, truncate :/
+					_stack[size - 1] = 0;
+				}
+				else
+				{
+					memcpy(_heap, message, sizeof(char) * length); // copy the message
+					_heap[length]    = 0;
+					_stack[size - 1] = 1; // mark the stack
+				}
+			}
 
-      if (!_heap) // allocation failed
-      {
-        memcpy(_stack, message, sizeof(char) * (size - 1)); // stack fallback, truncate :/
-        _stack[size - 1] = 0;
-      }
-      else
-      {
-        memcpy(_heap, message, sizeof(char) * length); // copy the message
-        _heap[length] = 0;
-        _stack[size - 1] = 1; // mark the stack
-      }
-    }
+			_file       = rhs._file;
+			_line       = rhs._line;
+			_function   = rhs._function;
+			_expression = rhs._expression;
 
-    _file = rhs._file;
-    _line = rhs._line;
-    _function = rhs._function;
-    _expression = rhs._expression;
+			return *this;
+		}
 
-    return *this;
-  }
+		const char* AssertionException::what() const PPK_ASSERT_EXCEPTION_NO_THROW
+		{
+			return _stack[size - 1] ? _heap : _stack;
+		}
 
-  const char* AssertionException::what() const PPK_ASSERT_EXCEPTION_NO_THROW
-  {
-    return _stack[size - 1] ? _heap : _stack;
-  }
+		namespace implementation
+		{
+			namespace
+			{
+				bool _ignoreAll = false;
+			}
 
-namespace implementation {
+			void PPK_ASSERT_CALL ignoreAllAsserts(bool value)
+			{
+				_ignoreAll = value;
+			}
 
-  namespace {
-    bool _ignoreAll = false;
-  }
+			bool PPK_ASSERT_CALL ignoreAllAsserts()
+			{
+				return _ignoreAll;
+			}
 
-  void PPK_ASSERT_CALL ignoreAllAsserts(bool value)
-  {
-    _ignoreAll = value;
-  }
+			namespace
+			{
+				AssertHandler _handler = _defaultHandler;
+			}
 
-  bool PPK_ASSERT_CALL ignoreAllAsserts()
-  {
-    return _ignoreAll;
-  }
+			AssertHandler PPK_ASSERT_CALL setAssertHandler(AssertHandler handler)
+			{
+				AssertHandler previous = _handler;
 
-  namespace {
-    AssertHandler _handler = _defaultHandler;
-  }
+				_handler = handler ? handler : _defaultHandler;
 
-  AssertHandler PPK_ASSERT_CALL setAssertHandler(AssertHandler handler)
-  {
-    AssertHandler previous = _handler;
+				return previous;
+			}
 
-    _handler = handler ? handler : _defaultHandler;
+			AssertAction::AssertAction PPK_ASSERT_CALL handleAssert(const char* file,
+			                                                        int         line,
+			                                                        const char* function,
+			                                                        const char* expression,
+			                                                        int         level,
+			                                                        bool*       ignoreLine,
+			                                                        const char* message, ...)
+			{
+				char        message_[PPK_ASSERT_MESSAGE_BUFFER_SIZE] = {0};
+				const char* file_;
 
-    return previous;
-  }
+				if (message)
+				{
+					va_list args;
+					va_start(args, message);
+					vsnprintf(message_, PPK_ASSERT_MESSAGE_BUFFER_SIZE, message, args);
+					va_end(args);
 
-  AssertAction::AssertAction PPK_ASSERT_CALL handleAssert(const char* file,
-                                                          int line,
-                                                          const char* function,
-                                                          const char* expression,
-                                                          int level,
-                                                          bool* ignoreLine,
-                                                          const char* message, ...)
-  {
-    char message_[PPK_ASSERT_MESSAGE_BUFFER_SIZE] = {0};
-    const char* file_;
-
-    if (message)
-    {
-      va_list args;
-      va_start(args, message);
-      vsnprintf(message_, PPK_ASSERT_MESSAGE_BUFFER_SIZE, message, args);
-      va_end(args);
-
-      message = message_;
-    }
+					message = message_;
+				}
 
 #if defined(_WIN32)
-    file_ = strrchr(file, '\\');
+				file_ = strrchr(file, '\\');
 #else
     file_ = strrchr(file, '/');
 #endif // #if defined(_WIN32)
 
-    file = file_ ? file_ + 1 : file;
-    AssertAction::AssertAction action = _handler(file, line, function, expression, level, message);
+				file                              = file_ ? file_ + 1 : file;
+				AssertAction::AssertAction action = _handler(file, line, function, expression, level, message);
 
-    switch (action)
-    {
-      case AssertAction::Abort:
-        PPK_ASSERT_ABORT();
+				switch (action)
+				{
+				case AssertAction::Abort:
+					PPK_ASSERT_ABORT();
 
 #if !defined(PPK_ASSERT_DISABLE_IGNORE_LINE)
-      case AssertAction::IgnoreLine:
-        *ignoreLine = true;
-        break;
+				case AssertAction::IgnoreLine:
+					*ignoreLine = true;
+					break;
 #else
       PPK_ASSERT_UNUSED(ignoreLine);
 #endif
 
-      case AssertAction::IgnoreAll:
-        ignoreAllAsserts(true);
-        break;
+				case AssertAction::IgnoreAll:
+					ignoreAllAsserts(true);
+					break;
 
-      case AssertAction::Throw:
-        _throw(file, line, function, expression, message);
-        break;
+				case AssertAction::Throw:
+					_throw(file, line, function, expression, message);
+					break;
 
-      case AssertAction::Ignore:
-      case AssertAction::Break:
-      case AssertAction::None:
-      default:
-        return action;
-    }
+				case AssertAction::Ignore:
+				case AssertAction::Break:
+				case AssertAction::None:
+				default:
+					return action;
+				}
 
-    return AssertAction::None;
-  }
-
-} // namespace implementation
-} // namespace assert
-} // namespace ppk
+				return AssertAction::None;
+			}
+		} // namespace implementation
+	}     // namespace assert
+}         // namespace ppk

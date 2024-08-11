@@ -13,15 +13,15 @@ public:
 
 	[[nodiscard]] const char* GetTestName() const override;
 	[[nodiscard]] const char* GetTestDescription() const override;
-	Test* Create() override;
-	
+	Test*                     Create() override;
+
 	void OnAttach() override;
 	void OnUpdate(double deltaSeconds) override;
 	void OnRender() override;
 	void OnImGuiRender() override;
-	
+
 private:
 	Ref<StaticShader> m_StaticShader;
-	Ref<Camera> m_Camera;
-	Ref<Entity> m_TestEntity;
+	Ref<Camera>       m_Camera;
+	Ref<Entity>       m_TestEntity;
 };

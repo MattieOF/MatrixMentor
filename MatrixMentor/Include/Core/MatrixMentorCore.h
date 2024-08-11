@@ -4,8 +4,8 @@
 
 // MSVC compiler intrinsics
 #ifdef MM_PLATFORM_WINDOWS
-	#define UNALIGNED __unaligned
-	#define FORCEINLINE __forceinline
+#define UNALIGNED __unaligned
+#define FORCEINLINE __forceinline
 #else
 	#define UNALIGNED
 	#define FORCEINLINE inline
@@ -39,7 +39,7 @@
 //
 extern "C++" // templates cannot be declared to have 'C' linkage
 template <typename T, size_t N>
-char(*RtlpNumberOf(UNALIGNED T(&)[N]))[N];
+char (* RtlpNumberOf(UNALIGNED T (&)[N]))[N];
 #define MM_ARRAY_SIZE(A) (sizeof(*RtlpNumberOf(A)))
 // -----------------------------------------------------------------------------------------------
 
@@ -61,32 +61,34 @@ char(*RtlpNumberOf(UNALIGNED T(&)[N]))[N];
 	#define MM_ASSERT_USED_FATAL     PPK_ASSERT_USED_FATAL
 	#define MM_ASSERT_USED_CUSTOM    PPK_ASSERT_USED_CUSTOM
 #else
-	#define MM_ASSERT                
-	#define MM_ASSERT_WARNING        
-	#define MM_ASSERT_DEBUG          
-	#define MM_ASSERT_ERROR          
-	#define MM_ASSERT_FATAL          
-	#define MM_ASSERT_CUSTOM         
-	#define MM_ASSERT_USED           
-	#define MM_ASSERT_USED_WARNING   
-	#define MM_ASSERT_USED_DEBUG     
-	#define MM_ASSERT_USED_ERROR     
-	#define MM_ASSERT_USED_FATAL     
-	#define MM_ASSERT_USED_CUSTOM
+#define MM_ASSERT                
+#define MM_ASSERT_WARNING        
+#define MM_ASSERT_DEBUG          
+#define MM_ASSERT_ERROR          
+#define MM_ASSERT_FATAL          
+#define MM_ASSERT_CUSTOM         
+#define MM_ASSERT_USED           
+#define MM_ASSERT_USED_WARNING   
+#define MM_ASSERT_USED_DEBUG     
+#define MM_ASSERT_USED_ERROR     
+#define MM_ASSERT_USED_FATAL     
+#define MM_ASSERT_USED_CUSTOM
 #endif
 
-template<typename T>
+template <typename T>
 using Scope = std::unique_ptr<T>;
-template<typename T, typename ... Args>
-constexpr Scope<T> CreateScope(Args&& ... args)
+
+template <typename T, typename... Args>
+constexpr Scope<T> CreateScope(Args&&... args)
 {
 	return std::make_unique<T>(std::forward<Args>(args)...);
 }
 
-template<typename T>
+template <typename T>
 using Ref = std::shared_ptr<T>;
-template<typename T, typename ... Args>
-constexpr Ref<T> CreateRef(Args&& ... args)
+
+template <typename T, typename... Args>
+constexpr Ref<T> CreateRef(Args&&... args)
 {
 	return std::make_shared<T>(std::forward<Args>(args)...);
 }

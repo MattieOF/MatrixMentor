@@ -10,7 +10,7 @@
 
 TestSelectionLayer::TestSelectionLayer()
 {
-	m_Tests.push_back(reinterpret_cast<Test*>(new PuppyCube()));    
+	m_Tests.push_back(reinterpret_cast<Test*>(new PuppyCube()));
 }
 
 TestSelectionLayer::~TestSelectionLayer()
@@ -23,7 +23,7 @@ void TestSelectionLayer::OnImGuiRender()
 {
 	if (m_CurrentTest != nullptr)
 		return;
-	
+
 	ImGui::Begin("Test Selection");
 
 	ImGui::Text("Press Shift+Escape to quit a test.");
@@ -36,7 +36,7 @@ void TestSelectionLayer::OnImGuiRender()
 	{
 		if (ImGui::Button(test->GetTestName()))
 		{
-			m_CurrentTest = test->Create();
+			m_CurrentTest                       = test->Create();
 			m_CurrentTest->m_TestSelectionLayer = this;
 			m_Window->PushLayer(m_CurrentTest);
 		}
@@ -59,9 +59,10 @@ void TestSelectionLayer::OnImGuiRender()
 		m_Window->Close();
 	}
 	if (ImGui::IsItemHovered())
-		ImGui::SetTooltip("Restart the application (checking everything gets cleaned up). Can also press Shift+Escape.");
+		ImGui::SetTooltip(
+			"Restart the application (checking everything gets cleaned up). Can also press Shift+Escape.");
 	ImGui::SameLine();
-	
+
 	ImGui::End();
 }
 
@@ -80,7 +81,8 @@ void TestSelectionLayer::OnUpdate(double deltaSeconds)
 			else
 				MM_INFO("The application will now shutdown fully on quit.");
 		}
-	} else
+	}
+	else
 	{
 		if (Input::IsKeyJustDown(MM_KEY_ESCAPE))
 		{

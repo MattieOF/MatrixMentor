@@ -12,8 +12,8 @@
 
 const ShaderProgram* Renderer::m_BoundShader   = nullptr;
 const Camera*        Renderer::m_CurrentCamera = nullptr;
-float			     Renderer::m_AspectRatio   = 1.f;
-glm::vec4			 Renderer::m_ClearColor    = glm::vec4(0.1f, 0.1f, 0.1f, 1.0f);
+float                Renderer::m_AspectRatio   = 1.f;
+glm::vec4            Renderer::m_ClearColor    = glm::vec4(0.1f, 0.1f, 0.1f, 1.0f);
 
 void Renderer::Prepare()
 {
@@ -25,12 +25,12 @@ void Renderer::Prepare()
 void Renderer::Begin(const Camera* camera)
 {
 	MM_ASSERT_ERROR(camera, "Renderer::Begin called with nullptr Camera!");
-	
+
 	m_CurrentCamera = camera;
-	
+
 	if (m_BoundShader)
 	{
-		StaticShader* staticShader = dynamic_cast<StaticShader*>(const_cast<ShaderProgram*>(m_BoundShader));
+		auto staticShader = dynamic_cast<StaticShader*>(const_cast<ShaderProgram*>(m_BoundShader));
 		if (staticShader != nullptr)
 		{
 			staticShader->LoadProjectionMatrix(m_CurrentCamera->GetProjectionMatrix(m_AspectRatio));
@@ -42,14 +42,14 @@ void Renderer::Begin(const Camera* camera)
 void Renderer::End()
 {
 	m_CurrentCamera = nullptr;
-	
+
 	if (m_BoundShader)
 	{
-		StaticShader* staticShader = dynamic_cast<StaticShader*>(const_cast<ShaderProgram*>(m_BoundShader));
+		auto staticShader = dynamic_cast<StaticShader*>(const_cast<ShaderProgram*>(m_BoundShader));
 		if (staticShader != nullptr)
 		{
 			staticShader->LoadProjectionMatrix(glm::mat4()); // Reset projection matrix by passing identity matrix
-			staticShader->LoadViewMatrix(glm::mat4()); // Same for view matrix	
+			staticShader->LoadViewMatrix(glm::mat4());       // Same for view matrix	
 		}
 	}
 }
@@ -57,8 +57,8 @@ void Renderer::End()
 void Renderer::Shutdown()
 {
 	m_CurrentCamera = nullptr;
-	m_BoundShader = nullptr;
-	m_AspectRatio = 0;
+	m_BoundShader   = nullptr;
+	m_AspectRatio   = 0;
 }
 
 void Renderer::RenderModel(const RawModel* model)
@@ -71,7 +71,7 @@ void Renderer::RenderModel(const RawModel* model)
 	glBindVertexArray(0);
 }
 
-void Renderer::RenderTexturedModel(const TexturedModel *model)
+void Renderer::RenderTexturedModel(const TexturedModel* model)
 {
 	MM_ASSERT_ERROR(model, "Renderer::RenderTexturedModel called with nullptr TexturedModel!");
 	glBindVertexArray(model->GetModel()->GetVAO());
@@ -94,7 +94,7 @@ void Renderer::RenderEntity(const Entity* entity, const StaticShader* shader)
 
 	if (m_BoundShader != shader)
 		BindShader(shader);
-	
+
 	shader->LoadTransformationMatrix(entity->GetTransform().GetTransformationMatrix());
 	RenderTexturedModel(entity->GetModel().get());
 }
@@ -106,7 +106,7 @@ void Renderer::BindShader(const ShaderProgram* shader)
 
 	if (m_CurrentCamera != nullptr)
 	{
-		StaticShader* staticShader = dynamic_cast<StaticShader*>(const_cast<ShaderProgram*>(shader));
+		auto staticShader = dynamic_cast<StaticShader*>(const_cast<ShaderProgram*>(shader));
 		if (staticShader != nullptr)
 		{
 			staticShader->LoadProjectionMatrix(m_CurrentCamera->GetProjectionMatrix(m_AspectRatio));

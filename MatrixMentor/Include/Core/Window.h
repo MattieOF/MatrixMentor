@@ -8,18 +8,18 @@ struct GLFWwindow;
 
 struct GLSettings
 {
-	int Major = 3, Minor = 2;
-	bool Core = true;
+	int  Major = 3, Minor = 2;
+	bool Core  = true;
 };
 
 struct WindowSpecification
 {
 	std::string Title;
-	int Width = 1280, Height = 600;
-	bool VSync = false;
-	bool Resizeable = true;
-	bool Centered = true;
-	GLSettings GLSettings;
+	int         Width      = 1280, Height = 600;
+	bool        VSync      = false;
+	bool        Resizeable = true;
+	bool        Centered   = true;
+	GLSettings  GLSettings;
 };
 
 struct WindowData
@@ -27,8 +27,8 @@ struct WindowData
 	using EventCallbackFn = std::function<void(Event&)>;
 
 	std::string Title = "Window";
-	uint32_t Width = 1280, Height = 600;
-	bool VSync = true;
+	uint32_t    Width = 1280, Height = 600;
+	bool        VSync = true;
 
 	EventCallbackFn EventCallback;
 };
@@ -49,30 +49,33 @@ public:
 	void PopLayer(Layer* layer);
 	void PopOverlay(Layer* overlay);
 
-	FORCEINLINE virtual void SetVSync(bool enabled);
+	FORCEINLINE virtual void               SetVSync(bool enabled);
 	FORCEINLINE [[nodiscard]] virtual bool IsVSync() const;
 
-	FORCEINLINE void SetClipboardText(const char* text) const;
+	FORCEINLINE void                      SetClipboardText(const char* text) const;
 	[[nodiscard]] FORCEINLINE const char* GetClipboardText() const;
 
 	FORCEINLINE void SetWindowTitle(std::string_view newTitle);
 
-	[[nodiscard]] virtual float GetAspectRatio() const { return static_cast<float>(m_WindowData.Width) / static_cast<float>(m_WindowData.Height); }
+	[[nodiscard]] virtual float GetAspectRatio() const
+	{
+		return static_cast<float>(m_WindowData.Width) / static_cast<float>(m_WindowData.Height);
+	}
 
 	[[nodiscard]] virtual GLFWwindow* GetNativeWindow() const { return m_Window; }
 
 	// Delta time functions
-	[[nodiscard]] double GetDeltaTime() const         { return m_UnscaledDeltaTime * m_TimeScale; }
+	[[nodiscard]] double GetDeltaTime() const { return m_UnscaledDeltaTime * m_TimeScale; }
 	[[nodiscard]] double GetUnscaledDeltaTime() const { return m_UnscaledDeltaTime; }
-	[[nodiscard]] double GetTimeScale() const         { return m_TimeScale; }
-	void SetTimeScale(double newTimeScale)            { m_TimeScale = newTimeScale; }
+	[[nodiscard]] double GetTimeScale() const { return m_TimeScale; }
+	void                 SetTimeScale(double newTimeScale) { m_TimeScale = newTimeScale; }
 
-	void Close() const;
+	void             Close() const;
 	FORCEINLINE bool ShouldClose() const;
 
 	static ImFont* s_NormalFont;
 	static ImFont* s_BoldFont;
-	
+
 private:
 	Window(const WindowSpecification& spec, GLFWwindow* window);
 	static void InitImGui();
@@ -80,7 +83,7 @@ private:
 	GLFWwindow* m_Window = nullptr;
 
 	std::vector<Layer*> m_Layers;
-	int m_LayerStackInsert = 0;
+	int                 m_LayerStackInsert = 0;
 
 	WindowData m_WindowData;
 
