@@ -2,7 +2,7 @@
 
 #include "Layer.h"
 
-struct ImGuiIO;
+struct ImFont;
 // Forward defs
 struct GLFWwindow;
 
@@ -70,8 +70,12 @@ public:
 	void Close() const;
 	FORCEINLINE bool ShouldClose() const;
 
+	static ImFont* s_NormalFont;
+	static ImFont* s_BoldFont;
+	
 private:
 	Window(const WindowSpecification& spec, GLFWwindow* window);
+	static void InitImGui();
 
 	GLFWwindow* m_Window = nullptr;
 

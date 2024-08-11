@@ -24,6 +24,9 @@ extern "C" {
 }
 #endif
 
+ImFont* Window::s_NormalFont = nullptr;
+ImFont* Window::s_BoldFont   = nullptr;
+
 static void GLFWErrorCallback(int error, const char* desc)
 {
 	MM_ERROR("GLFW Error ({0}): {1}", error, desc);
@@ -228,27 +231,12 @@ bool Window::Create(const WindowSpecification& spec, Window*& outWindow)
 	glDebugMessageCallback(GLErrorCallback, nullptr);
 #endif
 
-	// Initialise ImGui
-	IMGUI_CHECKVERSION();
-	ImGui::CreateContext();
-	auto io = ImGui::GetIO();
-	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
-	io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
-	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;         // Enable Docking
-	io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;       // Enable Multi-Viewport / Platform Windows
-	ImGui::StyleColorsDark();
-
-	ImGuiStyle& style = ImGui::GetStyle();
-	if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
-	{
-		style.WindowRounding = 0.0f;
-		style.Colors[ImGuiCol_WindowBg].w = 1.0f;
-	}
+	InitImGui();
 	
 	// Setup Platform/Renderer backends
 	ImGui_ImplGlfw_InitForOpenGL(window, true);
 	ImGui_ImplOpenGL3_Init("#version 410 core");
-
+	
 	// Init input
 	delete Input::s_Instance;
 	Input::s_Instance = new GlfwInput();
@@ -404,8 +392,10 @@ void Window::Run()
 		ImGui_ImplGlfw_NewFrame();
 		ImGui::NewFrame();
 
+		ImGui::PushFont(s_NormalFont);
 		for (Layer* layer : m_Layers)
 			layer->OnImGuiRender();
+		ImGui::PopFont();
 		
 		ImGui::Render();
 		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
@@ -536,6 +526,29 @@ Window::Window(const WindowSpecification& spec, GLFWwindow* window)
 	m_WindowData.VSync = spec.VSync;
 	m_WindowData.EventCallback = BIND_EVENT_FN(Window::OnEvent);
 	glfwSetWindowUserPointer(m_Window, &m_WindowData);
+}
+
+void Window::InitImGui()
+{
+	// Initialise ImGui
+	IMGUI_CHECKVERSION();
+	ImGui::CreateContext();
+	auto io = ImGui::GetIO();
+	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
+	io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
+	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;         // Enable Docking
+	io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;       // Enable Multi-Viewport / Platform Windows
+	ImGui::StyleColorsDark();
+
+	ImGuiStyle& style = ImGui::GetStyle();
+	if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+	{
+		style.WindowRounding = 0.0f;
+		style.Colors[ImGuiCol_WindowBg].w = 1.0f;
+	}
+
+	s_NormalFont = io.Fonts->AddFontFromFileTTF("Content/Fonts/OpenSans-Regular.ttf", 16.0f);
+	s_BoldFont   = io.Fonts->AddFontFromFileTTF("Content/Fonts/OpenSans-Bold.ttf", 16.0f);
 }
 
 Window::~Window()

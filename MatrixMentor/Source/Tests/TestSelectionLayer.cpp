@@ -27,6 +27,11 @@ void TestSelectionLayer::OnImGuiRender()
 	ImGui::Begin("Test Selection");
 
 	ImGui::Text("Press Shift+Escape to quit a test.");
+	ImGui::Separator();
+
+	ImGui::PushFont(Window::s_BoldFont);
+	ImGui::Text("Available tests:");
+	ImGui::PopFont();
 	for (Test* test : m_Tests)
 	{
 		if (ImGui::Button(test->GetTestName()))
