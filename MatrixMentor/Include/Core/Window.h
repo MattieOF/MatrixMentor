@@ -55,6 +55,8 @@ public:
 	FORCEINLINE void                      SetClipboardText(const char* text) const;
 	[[nodiscard]] FORCEINLINE const char* GetClipboardText() const;
 
+	[[nodiscard]] FORCEINLINE uint32_t GetFrameNumber() const { return m_Frame; }
+
 	FORCEINLINE void SetWindowTitle(std::string_view newTitle);
 
 	[[nodiscard]] virtual float GetAspectRatio() const
@@ -83,9 +85,12 @@ private:
 	GLFWwindow* m_Window = nullptr;
 
 	std::vector<Layer*> m_Layers;
+	std::vector<Layer*> m_QueuedLayerRemovals;
 	int                 m_LayerStackInsert = 0;
 
 	WindowData m_WindowData;
 
-	double m_UnscaledDeltaTime = 0, m_TimeScale = 1;
+	double   m_UnscaledDeltaTime = 0, m_TimeScale = 1;
+	bool     m_Updating = false;
+	uint32_t m_Frame = 0;
 };

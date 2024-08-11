@@ -2,6 +2,8 @@
 
 #include "Core/Rendering/Shaders/ShaderProgram.h"
 
+#include "Core/Rendering/Renderer.h"
+
 ShaderProgram::ShaderProgram(std::string_view name)
 	: m_Name(name)
 {
@@ -157,6 +159,9 @@ void ShaderProgram::BindAttribute(int attribute, std::string_view variableName)
 
 void ShaderProgram::CleanUp()
 {
+	if (Renderer::GetBoundShader() == this)
+		Renderer::BindShader(nullptr);
+	
 	glDeleteProgram(m_ProgramID);
 	m_ProgramID = 0;
 }

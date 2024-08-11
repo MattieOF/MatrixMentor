@@ -383,6 +383,8 @@ void Window::Run()
 
 		glfwPollEvents();
 
+		m_Updating = true;
+		
 		for (Layer* layer : m_Layers)
 			layer->OnUpdate(GetDeltaTime());
 
@@ -418,6 +420,15 @@ void Window::Run()
 		Input::UpdateInput();
 
 		glfwSwapBuffers(m_Window);
+		
+		m_Updating = false;
+
+		// Process queued layer removals
+		for (Layer* layer : m_QueuedLayerRemovals)
+			PopLayer(layer);
+		m_QueuedLayerRemovals.clear();
+
+		m_Frame++;
 	}
 }
 
@@ -462,22 +473,32 @@ void Window::PushOverlay(Layer* overlay)
 
 void Window::PopLayer(Layer* layer)
 {
-	const auto it = std::find(m_Layers.begin(), m_Layers.end(), layer);
-	if (it != m_Layers.end())
+	if (m_Updating)
+		m_QueuedLayerRemovals.push_back(layer);
+	else
 	{
-		layer->OnDetach();
-		m_Layers.erase(it);
-		m_LayerStackInsert--;
+		const auto it = std::find(m_Layers.begin(), m_Layers.end(), layer);
+		if (it != m_Layers.end())
+		{
+			layer->OnDetach();
+			m_Layers.erase(it);
+			m_LayerStackInsert--;
+		}
 	}
 }
 
 void Window::PopOverlay(Layer* overlay)
 {
-	const auto it = std::find(m_Layers.begin(), m_Layers.end(), overlay);
-	if (it != m_Layers.end())
+	if (m_Updating)
+		m_QueuedLayerRemovals.push_back(overlay);
+	else
 	{
-		overlay->OnDetach();
-		m_Layers.erase(it);
+		const auto it = std::find(m_Layers.begin(), m_Layers.end(), overlay);
+		if (it != m_Layers.end())
+		{
+			overlay->OnDetach();
+			m_Layers.erase(it);
+		}
 	}
 }
 

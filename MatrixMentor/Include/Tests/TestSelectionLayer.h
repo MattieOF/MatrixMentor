@@ -14,6 +14,7 @@ public:
 	void DestroyCurrentTest();
 
 private:
+	uint32_t           m_DestroyCurrentTestFrame = 0;
 	Test*              m_CurrentTest = nullptr;
 	std::vector<Test*> m_Tests;
 };

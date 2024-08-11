@@ -52,6 +52,8 @@ void Renderer::End()
 			staticShader->LoadViewMatrix(glm::mat4());       // Same for view matrix	
 		}
 	}
+
+	BindShader(nullptr);
 }
 
 void Renderer::Shutdown()
@@ -101,10 +103,14 @@ void Renderer::RenderEntity(const Entity* entity, const StaticShader* shader)
 
 void Renderer::BindShader(const ShaderProgram* shader)
 {
-	shader->Bind();
+	if (shader)
+		shader->Bind();
+	else
+		ShaderProgram::Unbind(); // TODO: Default shader?
+	
 	m_BoundShader = shader;
 
-	if (m_CurrentCamera != nullptr)
+	if (shader && m_CurrentCamera != nullptr)
 	{
 		auto staticShader = dynamic_cast<StaticShader*>(const_cast<ShaderProgram*>(shader));
 		if (staticShader != nullptr)

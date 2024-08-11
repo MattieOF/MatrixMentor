@@ -17,6 +17,8 @@ public:
 	FORCEINLINE static void ResetClearColor() { m_ClearColor = glm::vec4(0.1f, 0.1f, 0.1f, 1.0f); }
 	FORCEINLINE static void SetClearColor(glm::vec4 color) { m_ClearColor = color; }
 
+	FORCEINLINE static ShaderProgram* GetBoundShader() { return const_cast<ShaderProgram*>(m_BoundShader); }
+	
 	static void Prepare();
 	static void Begin(const Camera* camera);
 	static void End();
@@ -25,7 +27,7 @@ public:
 	static void RenderModel(const RawModel* model);
 	static void RenderTexturedModel(const TexturedModel* model);
 	static void RenderEntity(const Entity* entity, const StaticShader* shader);
-
+	
 	static void BindShader(const ShaderProgram* shader);
 
 private:

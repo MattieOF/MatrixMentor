@@ -41,7 +41,7 @@ void TestSelectionLayer::OnImGuiRender()
 			m_Window->PushLayer(m_CurrentTest);
 		}
 		ImGui::SameLine();
-		ImGui::Text(test->GetTestDescription());
+		ImGui::Text("%s", test->GetTestDescription());
 	}
 
 	ImGui::Separator();
@@ -68,6 +68,15 @@ void TestSelectionLayer::OnImGuiRender()
 
 void TestSelectionLayer::OnUpdate(double deltaSeconds)
 {
+	if (m_CurrentTest &&
+		m_DestroyCurrentTestFrame != 0 &&
+		m_Window->GetFrameNumber() >= m_DestroyCurrentTestFrame)
+	{
+		delete m_CurrentTest;
+		m_CurrentTest = nullptr;
+		m_DestroyCurrentTestFrame = 0;
+	}
+	
 	if (m_CurrentTest)
 	{
 		if (Input::IsKeyJustDown(MM_KEY_ESCAPE) && Input::IsKeyDown(MM_KEY_LEFT_SHIFT))
@@ -96,6 +105,7 @@ void TestSelectionLayer::DestroyCurrentTest()
 {
 	Renderer::ResetClearColor();
 	m_Window->PopLayer(m_CurrentTest);
-	delete m_CurrentTest;
-	m_CurrentTest = nullptr;
+	// Can't delete the test here because the frame isn't over - the pointer is still in use
+	// Instead, we'll set a flag to delete it in the next frame's update
+	m_DestroyCurrentTestFrame = m_Window->GetFrameNumber() + 1;
 }
