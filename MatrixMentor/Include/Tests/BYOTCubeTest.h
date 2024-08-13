@@ -11,7 +11,7 @@ public:
 	void OnAttach() override;
 	void OnUpdate(double deltaSeconds) override;
 	void OnRender() override;
-	void OnImGuiRender() override;
+	bool OnDrawTestPanel() override;
 	
 	Test* Create() override { return new BYOTCubeTest(); }
 	const char* GetTestDescription() const override { return "Cube with a dynamic texture"; }

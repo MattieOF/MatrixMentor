@@ -18,7 +18,7 @@ public:
 	void OnAttach() override;
 	void OnUpdate(double deltaSeconds) override;
 	void OnRender() override;
-	void OnImGuiRender() override;
+	bool OnDrawTestPanel() override;
 
 private:
 	Ref<StaticShader> m_StaticShader;

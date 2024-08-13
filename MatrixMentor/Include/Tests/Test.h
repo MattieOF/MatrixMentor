@@ -12,8 +12,12 @@ public:
 	[[nodiscard]] virtual const char* GetTestDescription() const = 0;
 	virtual Test*                     Create() = 0;
 
+	void OnImGuiRender() override;
+	virtual bool OnDrawTestPanel();
+
 	void DestroySelf();
 
-private:
+protected:
+	bool m_PanelVisible = false;
 	TestSelectionLayer* m_TestSelectionLayer = nullptr;
 };

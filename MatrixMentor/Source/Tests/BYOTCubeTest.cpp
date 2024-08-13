@@ -16,6 +16,8 @@
 
 void BYOTCubeTest::OnAttach()
 {
+	m_PanelVisible = true;
+	
 	//auto model = OBJLoader::LoadOBJ("Content/Models/Test.obj");
 	auto model = OBJLoader::LoadOBJ("Content/Models/Cube.obj");
 	if (!model)
@@ -50,10 +52,11 @@ void BYOTCubeTest::OnRender()
 	Renderer::End();
 }
 
-void BYOTCubeTest::OnImGuiRender()
+bool BYOTCubeTest::OnDrawTestPanel()
 {
-	ImGui::Begin("BYOT Cube", nullptr, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoResize);
-	ImGui::Text("This test demonstrates a cube with a dynamic texture.");
+	ImGui::PushFont(Window::s_BoldFont);
+	ImGui::Text("Settings");
+	ImGui::PopFont();
 	ImGui::DragFloat3("Cube Scale", &m_Entity->GetTransform().Scale.x, 0.01f, 0.1f, 10.f);
 	ImGui::Separator();
 	ImGui::PushFont(Window::s_BoldFont);
@@ -77,16 +80,13 @@ void BYOTCubeTest::OnImGuiRender()
 			LoadTexture(texturePath);
 		}
 	}
+	
 	if (ImGui::Button("Load"))
 	{
 		LoadTexture(texturePath);
 	}
-	
-	ImGui::Separator();
-	if (ImGui::Button("Return to test selection"))
-		DestroySelf();
-	
-	ImGui::End();
+
+	return true;
 }
 
 void BYOTCubeTest::LoadTexture(const char* texturePath) const

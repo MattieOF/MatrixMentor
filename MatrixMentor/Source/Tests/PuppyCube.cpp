@@ -2,6 +2,7 @@
 #include "Tests/PuppyCube.h"
 
 #include "imgui.h"
+#include "Core/Window.h"
 #include "Core/Entity/Entity.h"
 #include "Core/Input/Input.h"
 #include "Core/Rendering/Camera.h"
@@ -32,6 +33,8 @@ Test* PuppyCube::Create()
 
 void PuppyCube::OnAttach()
 {
+	m_PanelVisible = true;
+	
 	std::vector<float> vertices = {
 		-0.5f, 0.5f, -0.5f,
 		-0.5f, -0.5f, -0.5f,
@@ -126,20 +129,18 @@ void PuppyCube::OnRender()
 	Renderer::End();
 }
 
-void PuppyCube::OnImGuiRender()
+bool PuppyCube::OnDrawTestPanel()
 {
-	ImGui::Begin("Puppy Cube Test");
-
+	ImGui::PushFont(Window::s_BoldFont);
+	ImGui::Text("Controls");
+	ImGui::PopFont();
 	ImGui::Text("A/D: Rotate cube");
 	ImGui::Text("Left Shift: Speed up rotation");
 	ImGui::Text("W/S: Move cube along Z axis");
 	ImGui::Text("Q/E: Scale cube");
 	ImGui::Text("Arrow keys: Move camera");
-	ImGui::Separator();
-	if (ImGui::Button("Return to test selection"))
-		DestroySelf();
 
-	ImGui::End();
+	return true;
 }
 
 void PuppyCube::OnUpdate(double deltaSeconds)

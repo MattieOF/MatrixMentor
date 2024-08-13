@@ -31,6 +31,7 @@ void TestSelectionLayer::OnImGuiRender()
 	ImGui::Begin("Test Selection");
 
 	ImGui::Text("Press Shift+Escape to quit a test.");
+	ImGui::Text("F1 to toggle test info panel.");
 	ImGui::Separator();
 
 	ImGui::PushFont(Window::s_BoldFont);

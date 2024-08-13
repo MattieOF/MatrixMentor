@@ -7,7 +7,7 @@
 
 void DebugInfoLayer::OnUpdate(double deltaSeconds)
 {
-	if (Input::IsKeyJustDown(MM_KEY_F1))
+	if (Input::IsKeyJustDown(MM_KEY_F2))
 		m_IsVisible = !m_IsVisible;
 }
 
