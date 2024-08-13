@@ -34,6 +34,8 @@ public:
 		return viewMatrix;
 	}
 
+	void DoDefaultMovement(float deltaTime);
+
 	float FOV       = 90;
 	float NearPlane = 0.1f;
 	float FarPlane  = 1000.0f;

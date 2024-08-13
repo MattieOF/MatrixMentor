@@ -7,6 +7,7 @@
 Texture::Texture(std::string_view filename, TextureSpecification spec)
 {
 	// Load texture from file using stb_image
+	stbi_set_flip_vertically_on_load(true); // OpenGL expects textures to be flipped vertically
 	uint8_t* data = stbi_load(filename.data(), &m_Width, &m_Height, &m_Channels, 4);
 
 	// Error check texture loading

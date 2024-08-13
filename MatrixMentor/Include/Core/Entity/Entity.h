@@ -18,7 +18,7 @@ public:
 	void                                    SetModel(const Ref<TexturedModel>& model) { m_Model = model; }
 	[[nodiscard]] const Ref<TexturedModel>& GetModel() const { return m_Model; }
 
-private:
+protected:
 	Transform          m_Transform;
 	Ref<TexturedModel> m_Model;
 };

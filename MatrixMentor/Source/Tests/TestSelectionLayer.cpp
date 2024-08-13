@@ -6,11 +6,13 @@
 #include "Core/Window.h"
 #include "Core/Input/Input.h"
 #include "Core/Rendering/Renderer.h"
+#include "Tests/OBJLoadingTest.h"
 #include "Tests/PuppyCube.h"
 
 TestSelectionLayer::TestSelectionLayer()
 {
 	m_Tests.push_back(reinterpret_cast<Test*>(new PuppyCube()));
+	m_Tests.push_back(reinterpret_cast<Test*>(new OBJLoadingTest()));
 }
 
 TestSelectionLayer::~TestSelectionLayer()
