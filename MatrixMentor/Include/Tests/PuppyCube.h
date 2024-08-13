@@ -6,7 +6,7 @@ class Entity;
 class Camera;
 class StaticShader;
 
-class PuppyCube : Test
+class PuppyCube : public Test
 {
 public:
 	PuppyCube();

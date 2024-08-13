@@ -9,6 +9,10 @@ std::shared_ptr<spdlog::logger> s_MatrixMentorLogger;
 
 void InitLog()
 {
+#ifdef MM_NO_LOG
+	return;
+#endif
+	
 	if (!s_MatrixMentorLogger)
 	{
 		spdlog::set_pattern("%^[%T] %n: %v%$");

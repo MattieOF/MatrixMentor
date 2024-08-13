@@ -29,6 +29,7 @@ Texture::Texture(std::string_view filename, TextureSpecification spec)
 
 void Texture::CleanUp()
 {
+	MM_INFO("Cleaning up texture {0}", m_TextureID);
 	glDeleteTextures(1, &m_TextureID);
 	m_TextureID = 0;
 }
