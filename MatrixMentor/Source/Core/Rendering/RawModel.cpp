@@ -12,6 +12,9 @@ RawModel::RawModel(const std::vector<float>&    vertices, const std::vector<floa
 	BindIndiciesBuffer(indices);
 	StoreDataInAttributeList(0, vertices, 3);
 	StoreDataInAttributeList(1, texCoords, 2);
+	// Generate dummy normals
+	std::vector normals(vertices.size(), glm::vec3(0.0f, 0.0f, 0.0f)); // TODO: Calculate normals
+	StoreDataInAttributeList(2, normals);
 	// A bit weird to have texCoords here, considering we have a TexturedModel class
 	glBindVertexArray(0);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0); // Unbind IBO after unbinding VAO, or it'll unbind the IBO from the VAO
@@ -25,7 +28,7 @@ RawModel::RawModel(const std::vector<glm::vec3>& vertices, const std::vector<glm
 	BindIndiciesBuffer(indices);
 	StoreDataInAttributeList(0, vertices);
 	StoreDataInAttributeList(1, texCoords);
-	// StoreDataInAttributeList(2, normals);
+	StoreDataInAttributeList(2, normals);
 	// A bit weird to have texCoords here, considering we have a TexturedModel class
 	glBindVertexArray(0);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0); // Unbind IBO after unbinding VAO, or it'll unbind the IBO from the VAO
@@ -47,6 +50,22 @@ void RawModel::BindIndiciesBuffer(const std::vector<uint32_t>& indices)
 	glGenBuffers(1, &m_IBO);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_IBO);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(indices[0]), indices.data(), GL_STATIC_DRAW);
+}
+
+void RawModel::BindVAO()
+{
+	MM_ASSERT_ERROR(m_VAO != 0, "RawModel::BindVAO called with invalid VAO!");
+	
+	glBindVertexArray(m_VAO);
+	for (uint32_t i = 0; i < m_VertexAttributeCount; i++)
+		glEnableVertexAttribArray(i);
+}
+
+void RawModel::UnbindVAO()
+{
+	glBindVertexArray(0);
+	for (uint32_t i = 0; i < m_VertexAttributeCount; i++)
+		glDisableVertexAttribArray(i);
 }
 
 void RawModel::StoreDataInAttributeList(uint32_t index, const std::vector<glm::vec3>& data)
@@ -83,6 +102,8 @@ void RawModel::StoreDataInAttributeList(const uint32_t index, const void* data, 
 	glVertexAttribPointer(index, dataStride, dataType, false, 0, nullptr);
 	glDisableVertexAttribArray(index);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+	m_VertexAttributeCount = std::max(m_VertexAttributeCount, index + 1);
 }
 
 uint32_t RawModel::CreateEmptyVAO()

@@ -35,7 +35,7 @@ void BYOTCubeTest::OnAttach()
 	}
 	
 	m_Camera = CreateRef<Camera>();
-	m_Shader = CreateRef<StaticShader>();
+	m_Shader = StaticShader::Create();
 	m_Entity = CreateRef<Entity>(Transform(glm::vec3(0, 0, -5)), CreateRef<TexturedModel>(model, texture));
 }
 

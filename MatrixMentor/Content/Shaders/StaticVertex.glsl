@@ -2,6 +2,7 @@
 
 in vec3 inPosition;
 in vec2 inUV;
+in vec3 inNormal;
 
 out vec2 passUV;
 

@@ -1,4 +1,5 @@
 ﻿#pragma once
+
 #include "Test.h"
 
 class Entity;
@@ -14,8 +15,8 @@ public:
 	bool OnDrawTestPanel() override;
 	
 	Test* Create() override { return new BYOTCubeTest(); }
-	const char* GetTestDescription() const override { return "Cube with a dynamic texture"; }
 	const char* GetTestName() const override { return "BYOT Cube"; }
+	const char* GetTestDescription() const override { return "Cube with a dynamic texture"; }
 
 private:
 	void LoadTexture(const char* texturePath) const;

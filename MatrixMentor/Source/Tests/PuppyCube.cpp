@@ -117,7 +117,7 @@ void PuppyCube::OnAttach()
 
 	m_Camera = CreateRef<Camera>();
 
-	m_StaticShader = CreateRef<StaticShader>();
+	m_StaticShader = StaticShader::Create();
 
 	Renderer::SetClearColor(glm::vec4(0.392f, 0.584f, 0.929f, 1.f)); // Cornflower blue
 }

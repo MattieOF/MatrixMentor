@@ -2,7 +2,15 @@
 
 #include "Core/Rendering/Shaders/StaticShader.h"
 
-StaticShader::StaticShader() : ShaderProgram("Static Shader")
+StaticShader::StaticShader()
+	: ShaderProgram("Static Shader")
+{ }
+
+StaticShader::StaticShader(std::string_view name)
+	: ShaderProgram(name)
+{ }
+
+void StaticShader::Setup()
 {
 	AddStageFromFile(GL_VERTEX_SHADER, "Content/Shaders/StaticVertex.glsl");
 	AddStageFromFile(GL_FRAGMENT_SHADER, "Content/Shaders/StaticFragment.glsl");
@@ -13,6 +21,7 @@ void StaticShader::BindAttributes()
 {
 	BindAttribute(0, "inPosition");
 	BindAttribute(1, "inUV");
+	BindAttribute(2, "inNormal");
 }
 
 void StaticShader::GetUniformLocations()

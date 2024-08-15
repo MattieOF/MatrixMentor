@@ -31,9 +31,9 @@ int32_t ShaderProgram::AddStageFromSource(GLenum stage, std::string_view source)
 		return -1;
 	}
 
-	for (int32_t attrib : m_Attributes)
-		glEnableVertexAttribArray(attrib);
-
+	for (uint32_t i = 0; i < m_UsedVertexAttributes; i++)
+		glEnableVertexAttribArray(i);
+	
 	int32_t     shaderID = glCreateShader(stage);
 	const auto  length   = static_cast<int32_t>(source.length());
 	const char* data     = source.data();
@@ -88,10 +88,10 @@ int32_t ShaderProgram::AddStageFromFile(GLenum stage, std::string_view source)
 int32_t ShaderProgram::LinkProgram()
 {
 	BindAttributes();
-
-	for (int32_t attrib : m_Attributes)
-		glEnableVertexAttribArray(attrib);
-
+	
+	for (uint32_t i = 0; i < m_UsedVertexAttributes; i++)
+		glEnableVertexAttribArray(i);
+	
 	// Create the program and attach and link all shaders
 	for (const int32_t shaderID : m_ShaderStages)
 		glAttachShader(m_ProgramID, shaderID);
@@ -154,7 +154,7 @@ void ShaderProgram::BindAttributes()
 void ShaderProgram::BindAttribute(int attribute, std::string_view variableName)
 {
 	glBindAttribLocation(m_ProgramID, attribute, variableName.data());
-	m_Attributes.emplace_back(attribute);
+	m_UsedVertexAttributes = std::max(m_UsedVertexAttributes, static_cast<uint32_t>(attribute + 1));
 }
 
 void ShaderProgram::CleanUp()

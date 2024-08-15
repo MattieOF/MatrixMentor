@@ -6,6 +6,7 @@
 #include "Core/Window.h"
 #include "Core/Input/Input.h"
 #include "Core/Rendering/Renderer.h"
+#include "Tests/BasicLightingTest.h"
 #include "Tests/BYOTCubeTest.h"
 #include "Tests/OBJLoadingTest.h"
 #include "Tests/PuppyCube.h"
@@ -15,6 +16,7 @@ TestSelectionLayer::TestSelectionLayer()
 	m_Tests.push_back(new PuppyCube());
 	m_Tests.push_back(new BYOTCubeTest());
 	m_Tests.push_back(new OBJLoadingTest());
+	m_Tests.push_back(new BasicLightingTest());
 }
 
 TestSelectionLayer::~TestSelectionLayer()

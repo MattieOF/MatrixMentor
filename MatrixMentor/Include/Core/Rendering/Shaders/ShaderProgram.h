@@ -24,7 +24,7 @@ public:
 	// Binding functions
 	void Bind() const;
 
-	static FORCEINLINE void Unbind()
+	static FORCEINLINE void StaticUnbind()
 	{
 		glUseProgram(0);
 	}
@@ -62,10 +62,10 @@ public:
 
 	static const char* GetShaderTypeString(GLenum type);
 
-private:
+protected:
 	std::vector<int32_t>                     m_ShaderStages;
-	std::vector<int32_t>                     m_Attributes;
 	std::unordered_map<std::string, int32_t> m_UniformLocations;
+	uint32_t                                 m_UsedVertexAttributes = 0;
 
 	std::string m_Name       = "Untitled Shader";
 	int32_t     m_ProgramID  = -1;
