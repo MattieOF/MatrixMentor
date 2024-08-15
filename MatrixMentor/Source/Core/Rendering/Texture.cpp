@@ -4,25 +4,35 @@
 #include "Vendor/stb_image.h"
 #include "glad/gl.h"
 
-Texture::Texture(std::string_view filename, TextureSpecification spec)
+Texture::Texture(std::string_view filename, const TextureSpecification& spec)
 {
 	// Load texture from file using stb_image
-	stbi_set_flip_vertically_on_load(true); // OpenGL expects textures to be flipped vertically
+	stbi_set_flip_vertically_on_load(spec.FlipVertically);
 	uint8_t* data = stbi_load(filename.data(), &m_Width, &m_Height, &m_Channels, 4);
 
 	// Error check texture loading
 	if (data == nullptr)
 	{
-		// Failed to load texture
 		MM_ERROR("Failed to load texture \"{0}\": {1}", filename, stbi_failure_reason());
-		return;
+		return; // TODO: Not properly indicating failure - best we do is 0 texture ID and 0 width/height
 	}
 
 	// Create OpenGL texture
 	glGenTextures(1, &m_TextureID);
 	glBindTexture(GL_TEXTURE_2D, m_TextureID);
+
+	// Set texture parameters
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, static_cast<GLint>(spec.Wrap));
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, static_cast<GLint>(spec.Wrap));
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, static_cast<GLint>(spec.MinFilter));
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, static_cast<GLint>(spec.MagFilter));
+	
+	// Set data
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, m_Width, m_Height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
-	glGenerateMipmap(GL_TEXTURE_2D);
+
+	// Generate mipmaps if needed
+	if (spec.GenerateMipmaps)
+		glGenerateMipmap(GL_TEXTURE_2D);
 
 	stbi_image_free(data);
 }
