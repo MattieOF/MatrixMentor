@@ -16,6 +16,8 @@ void BasicLightingTest::OnAttach()
 {
 	Test::OnAttach();
 
+	m_PanelVisible = true;
+
 	m_Shader = BasicLightingShader::Create();
 	m_Camera = CreateRef<Camera>();
 

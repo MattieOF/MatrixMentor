@@ -16,6 +16,8 @@ BasicSpecularLightingTest::BasicSpecularLightingTest()
 void BasicSpecularLightingTest::OnAttach()
 {
 	Test::OnAttach();
+	
+	m_PanelVisible = true;
 
 	m_Shader = BasicSpecularLightingShader::Create();
 	m_Camera = CreateRef<Camera>();

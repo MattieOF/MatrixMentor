@@ -144,6 +144,10 @@ void ShaderProgram::Bind() const
 {
 	MM_ASSERT_ERROR(m_ProgramID != 0, "Attempting to bind to invalid shader (invalid program ID)");
 	glUseProgram(m_ProgramID);
+	if (m_TwoSided)
+		glDisable(GL_CULL_FACE);
+	else
+		glEnable(GL_CULL_FACE);
 }
 
 void ShaderProgram::BindAttributes()
@@ -267,6 +271,19 @@ void ShaderProgram::SetUniformMatrix3f(std::string_view uniformName, const glm::
 void ShaderProgram::SetUniformMatrix4f(std::string_view uniformName, const glm::mat4& matrix) const
 {
 	glUniformMatrix4fv(GetUniformLocation(uniformName), 1, GL_FALSE, value_ptr(matrix));
+}
+
+void ShaderProgram::SetTwoSided(bool twoSided)
+{
+	m_TwoSided = twoSided;
+
+	if (Renderer::GetBoundShader() == this)
+	{
+		if (m_TwoSided)
+			glDisable(GL_CULL_FACE);
+		else
+			glEnable(GL_CULL_FACE);
+	}
 }
 
 void ShaderProgram::SetUniform1b(std::string_view uniformName, bool value) const

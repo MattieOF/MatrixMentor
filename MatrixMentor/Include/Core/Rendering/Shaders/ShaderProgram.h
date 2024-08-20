@@ -46,6 +46,9 @@ public:
 	void SetUniformMatrix3f(std::string_view uniformName, const glm::mat3& vec) const;
 	void SetUniformMatrix4f(std::string_view uniformName, const glm::mat4& matrix) const;
 
+	[[nodiscard]] FORCEINLINE bool IsTwoSided() const { return m_TwoSided; }
+	void SetTwoSided(bool twoSided);
+
 	FORCEINLINE bool IsComplete() const { return m_IsComplete; }
 	FORCEINLINE bool HasError() const { return m_HasError; }
 
@@ -70,4 +73,6 @@ protected:
 	std::string m_Name       = "Untitled Shader";
 	int32_t     m_ProgramID  = -1;
 	bool        m_IsComplete = false, m_HasError = false;
+
+	bool m_TwoSided = false;
 };

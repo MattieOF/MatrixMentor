@@ -20,6 +20,7 @@ void Renderer::Prepare()
 	glEnable(GL_DEPTH_TEST);
 	glClearColor(m_ClearColor.r, m_ClearColor.g, m_ClearColor.b, m_ClearColor.a);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+	glCullFace(GL_BACK);
 }
 
 void Renderer::Begin(const Camera* camera)
